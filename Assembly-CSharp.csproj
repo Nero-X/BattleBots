@@ -60,8 +60,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\GameManager.cs" />
-    <Compile Include="Assets\Main.cs" />
+    <Compile Include="Assets\Menu.cs" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>D:/Coding/Unity projects/BattleBots/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
