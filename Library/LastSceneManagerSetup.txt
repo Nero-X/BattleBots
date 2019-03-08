@@ -1,7 +1,0 @@
-sceneSetups:
-- path: Assets/Scenes/MainMenu.unity
-  isLoaded: 0
-  isActive: 0
-- path: Assets/Scenes/Setup.unity
-  isLoaded: 1
-  isActive: 1

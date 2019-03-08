@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Menu.cs" />
+    <Compile Include="Assets\Setup.cs" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>D:/Programming/Unity projects/BattleBots/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>

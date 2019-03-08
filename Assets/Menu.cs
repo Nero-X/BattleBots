@@ -4,15 +4,14 @@ using UnityEngine.SceneManagement;
 
 public class Menu : MonoBehaviour
 {
+    public Button newGame;
     public Button exit;
-    public Button next;
-    public Scene setup;
 
     // Start is called before the first frame update
     void Start()
     {
+        newGame.onClick.AddListener(NewGame);
         exit.onClick.AddListener(Close);
-        next.onClick.AddListener(Next);
     }
 
     // Update is called once per frame
@@ -21,13 +20,15 @@ public class Menu : MonoBehaviour
         
     }
 
+    void NewGame()
+    {
+        SceneManager.LoadScene("Setup", LoadSceneMode.Single);
+    }
+
     void Close()
     {
         Application.Quit();
     }
 
-    void Next()
-    {
-        SceneManager.LoadScene("Setup", LoadSceneMode.Single);
-    }
+
 }
