@@ -187,7 +187,7 @@ PrefabInstance:
     - target: {fileID: 4718547039045234905, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -11.002014
+      value: -11.001999
       objectReference: {fileID: 0}
     - target: {fileID: 4718547039045234905, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
@@ -243,6 +243,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 63
+      objectReference: {fileID: 0}
+    - target: {fileID: 5841637612010391967, guid: 03d88889dbb70d94580aff98f16ec5dc,
+        type: 3}
+      propertyPath: m_Text
+      value: "\u0423\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435"
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 03d88889dbb70d94580aff98f16ec5dc, type: 3}
@@ -1483,7 +1488,7 @@ PrefabInstance:
     - target: {fileID: 4718547039045234905, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -11.002014
+      value: -11.001999
       objectReference: {fileID: 0}
     - target: {fileID: 4718547039045234905, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
@@ -1539,6 +1544,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.x
       value: -12.099976
+      objectReference: {fileID: 0}
+    - target: {fileID: 5841637612010391967, guid: 03d88889dbb70d94580aff98f16ec5dc,
+        type: 3}
+      propertyPath: m_Text
+      value: "\u0421\u043E\u0431\u044B\u0442\u0438\u044F"
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 03d88889dbb70d94580aff98f16ec5dc, type: 3}
@@ -1911,7 +1921,7 @@ PrefabInstance:
     - target: {fileID: 4718547039045234905, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -11.002014
+      value: -11.001999
       objectReference: {fileID: 0}
     - target: {fileID: 4718547039045234905, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
@@ -1952,6 +1962,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5841637612010391967, guid: 03d88889dbb70d94580aff98f16ec5dc,
+        type: 3}
+      propertyPath: m_Text
+      value: "\u0414\u0432\u0438\u0436\u0435\u043D\u0438\u0435"
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 03d88889dbb70d94580aff98f16ec5dc, type: 3}
