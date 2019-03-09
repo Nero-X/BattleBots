@@ -10,6 +10,8 @@ public class Setup : MonoBehaviour
     public Text title;
 
     int player = 1;
+    string title1 = "Bot1";
+    string title2 = "Bot2";
 
     // Start is called before the first frame update
     void Start()
@@ -26,11 +28,12 @@ public class Setup : MonoBehaviour
 
     void Next()
     {
-        if (player == 1)
+        player++;
+        if (player == 2)
         {
             header.color = Color.red;
+            title.text = title2;
             // очистить скрипт
-            player++;
         }
         else
         {
@@ -40,15 +43,16 @@ public class Setup : MonoBehaviour
 
     private void Back()
     {
-        if (player == 1)
+        player--;
+        if (player == 0)
         {
             SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
         }
         else
         {
             header.color = Color.green;
+            title.text = title1;
             // загрузить скрипт
-            player--;
         }
     }
 
