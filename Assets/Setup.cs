@@ -8,6 +8,9 @@ public class Setup : MonoBehaviour
     public Button back;
     public Image header;
     public Text title;
+    public Button add;
+    public GameObject panel;
+    public Transform Content;
 
     int player = 1;
     string title1 = "Bot1";
@@ -18,6 +21,7 @@ public class Setup : MonoBehaviour
     {
         next.onClick.AddListener(Next);
         back.onClick.AddListener(Back);
+        add.onClick.AddListener(Add);
     }
 
     // Update is called once per frame
@@ -56,4 +60,13 @@ public class Setup : MonoBehaviour
         }
     }
 
+    private void Add()
+    {
+        if (Content.childCount < 25)
+        {
+            GameObject panelCopy = Instantiate(panel, Content);
+            panelCopy.GetComponentInChildren<Text>().text = (Content.childCount - 1) + ":";
+            panelCopy.transform.SetSiblingIndex(Content.childCount - 2);
+        }
+    }
 }
