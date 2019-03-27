@@ -21,7 +21,6 @@ public class DropZone : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPoin
     public void OnDrop(PointerEventData eventData)
     {
         this.GetComponent<Image>().color = Color.clear;
-        eventData.pointerDrag.transform.SetParent(this.transform);
         /*Draggable d = eventData.pointerDrag.GetComponent<Draggable>();
         if (d != null)
         {

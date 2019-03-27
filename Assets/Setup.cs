@@ -54,7 +54,7 @@ public class Setup : MonoBehaviour
         }
         else
         {
-            header.color = Color.green;
+            header.color = new Color(0, 0.5647059f, 0, 1);
             title.text = title1;
             // загрузить скрипт
         }

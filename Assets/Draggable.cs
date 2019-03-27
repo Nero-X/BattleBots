@@ -5,7 +5,6 @@ using UnityEngine.UI;
 public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
     GameObject element;
-    public Transform parentToReturnTo;
     Color original;
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -13,24 +12,24 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         if (this.gameObject.name.Contains("Clone")) element = this.gameObject;
         else
         {
-            element = Instantiate(this.gameObject, this.gameObject.transform.root);
+            element = Instantiate(this.gameObject, this.transform.root);
             element.transform.GetComponentInChildren<Image>().SetNativeSize();
             element.transform.localScale = new Vector3(element.transform.localScale.x * 0.75f, element.transform.localScale.y * 0.75f);
         }
+        element.transform.SetParent(element.transform.root);
         element.GetComponent<CanvasGroup>().blocksRaycasts = false;
-        parentToReturnTo = this.transform.parent;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
         element.transform.position = eventData.position;
-        
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
         element.GetComponent<CanvasGroup>().blocksRaycasts = true;
-        this.transform.SetParent(parentToReturnTo);
+        element.transform.SetParent(eventData.pointerEnter.transform);
+        element.transform.localPosition.Set(0, 10, 0);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -52,10 +51,5 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     {
         if (this.name.Contains("Placeholder")) this.GetComponent<Image>().color = Color.clear;
         eventData.pointerDrag.transform.SetParent(this.transform);
-        Draggable d = eventData.pointerDrag.GetComponent<Draggable>();
-        if (d != null)
-        {
-            d.parentToReturnTo = this.transform;
-        }
     }
 }
