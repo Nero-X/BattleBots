@@ -29,7 +29,12 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     {
         element.GetComponent<CanvasGroup>().blocksRaycasts = true;
         element.transform.SetParent(eventData.pointerEnter.transform);
-        element.transform.localPosition.Set(0, 10, 0);
+        RectTransform rectTransform = eventData.pointerEnter.GetComponent<RectTransform>();
+        Debug.Log(eventData.pointerEnter.name);
+        if (eventData.pointerEnter.name.Contains("Content") == false)
+        {
+            element.transform.position = new Vector3(eventData.pointerEnter.transform.position.x, eventData.pointerEnter.transform.position.y - rectTransform.sizeDelta.y / 1.1f);
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -49,7 +54,6 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     public void OnDrop(PointerEventData eventData)
     {
-        if (this.name.Contains("Placeholder")) this.GetComponent<Image>().color = Color.clear;
-        eventData.pointerDrag.transform.SetParent(this.transform);
+
     }
 }
