@@ -1,11 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
     GameObject element;
-    Color original;
 
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -30,10 +30,10 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         element.GetComponent<CanvasGroup>().blocksRaycasts = true;
         element.transform.SetParent(eventData.pointerEnter.transform);
         RectTransform rectTransform = eventData.pointerEnter.GetComponent<RectTransform>();
-        Debug.Log(eventData.pointerEnter.name);
+        //int dy = (int)Math.Round(Screen.height * (0.0559 + (Screen.height - 912) * (-0.00004763))); :D
         if (eventData.pointerEnter.name.Contains("Content") == false)
         {
-            element.transform.position = new Vector3(eventData.pointerEnter.transform.position.x, eventData.pointerEnter.transform.position.y - rectTransform.sizeDelta.y / 1.1f);
+            element.transform.position = new Vector3(eventData.pointerEnter.transform.position.x, eventData.pointerEnter.transform.position.y - (int)Math.Round(Screen.height * 0.05));
         }
     }
 
@@ -41,19 +41,18 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     {
         if (eventData.pointerDrag == null)
             return;
-        //original = this.gameObject.GetComponentInChildren<Image>().color;
-        this.gameObject.GetComponentInChildren<Image>().color = Color.yellow;
+        eventData.pointerEnter.GetComponentInChildren<Image>().color = Color.yellow;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         if (eventData.pointerDrag == null)
             return;
-        this.gameObject.GetComponentInChildren<Image>().color = Color.white;
+        eventData.pointerEnter.GetComponentInChildren<Image>().color = Color.white;
     }
 
     public void OnDrop(PointerEventData eventData)
     {
-
+        eventData.pointerEnter.GetComponentInChildren<Image>().color = Color.white;
     }
 }
