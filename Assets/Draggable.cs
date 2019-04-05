@@ -27,13 +27,18 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        //Debug.Log("OnEndDrag");
+        if (!(eventData.pointerEnter.name.Contains("Content") || eventData.pointerEnter.name.Contains("Image") || eventData.pointerEnter.name.Contains("Text"))) Destroy(element);
         element.GetComponent<CanvasGroup>().blocksRaycasts = true;
-        element.transform.SetParent(eventData.pointerEnter.transform);
-        RectTransform rectTransform = eventData.pointerEnter.GetComponent<RectTransform>();
+        if(eventData.pointerEnter.name == "Text") element.transform.SetParent(eventData.pointerEnter.transform.parent.parent);
+        else element.transform.SetParent(eventData.pointerEnter.transform);
+        RectTransform parentRectTransform = element.transform.parent.GetComponent<RectTransform>();
+        RectTransform elementRectTransform = element.GetComponentInChildren<Image>().rectTransform;
         //int dy = (int)Math.Round(Screen.height * (0.0559 + (Screen.height - 912) * (-0.00004763))); :D
         if (eventData.pointerEnter.name.Contains("Content") == false)
         {
-            element.transform.position = new Vector3(eventData.pointerEnter.transform.position.x, eventData.pointerEnter.transform.position.y - (int)Math.Round(Screen.height * 0.05));
+            element.transform.position = new Vector3(eventData.pointerEnter.transform.position.x + (elementRectTransform.sizeDelta.x - parentRectTransform.sizeDelta.x) / 2,
+                eventData.pointerEnter.transform.position.y - (int)Math.Round(Screen.height * 0.055));
         }
     }
 
@@ -54,5 +59,16 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     public void OnDrop(PointerEventData eventData)
     {
         eventData.pointerEnter.GetComponentInChildren<Image>().color = Color.white;
+        ClearHighlited();
+    }
+
+    public void ClearHighlited()
+    {
+        GameObject nextParent = this.gameObject;
+        while (nextParent.name != "Content")
+        {
+            nextParent.GetComponentInChildren<Image>().color = Color.white;
+            nextParent = nextParent.transform.parent.gameObject;
+        }
     }
 }
