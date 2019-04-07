@@ -6,6 +6,9 @@ using UnityEngine.UI;
 public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
     GameObject element;
+    internal Type type;
+
+    internal enum Type { Movement, Event, Control, Sensor, Operator}
 
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -27,7 +30,6 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        //Debug.Log("OnEndDrag");
         if (!(eventData.pointerEnter.name.Contains("Content") || eventData.pointerEnter.name.Contains("Image") || eventData.pointerEnter.name.Contains("Text"))) Destroy(element);
         element.GetComponent<CanvasGroup>().blocksRaycasts = true;
         if(eventData.pointerEnter.name == "Text") element.transform.SetParent(eventData.pointerEnter.transform.parent.parent);
@@ -37,7 +39,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         //int dy = (int)Math.Round(Screen.height * (0.0559 + (Screen.height - 912) * (-0.00004763))); :D
         if (eventData.pointerEnter.name.Contains("Content") == false)
         {
-            element.transform.position = new Vector3(eventData.pointerEnter.transform.position.x + (elementRectTransform.sizeDelta.x - parentRectTransform.sizeDelta.x) / 2,
+            element.transform.position = new Vector3(eventData.pointerEnter.transform.position.x + (elementRectTransform.sizeDelta.x - parentRectTransform.sizeDelta.x) * (Screen.height / 1200f),
                 eventData.pointerEnter.transform.position.y - (int)Math.Round(Screen.height * 0.055));
         }
     }

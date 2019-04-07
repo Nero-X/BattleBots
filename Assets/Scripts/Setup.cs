@@ -8,8 +8,9 @@ public class Setup : MonoBehaviour
     public Button back;
     public Image header;
     public Text title;
-    public GameObject panel;
-    public Transform Content;
+    public Transform content;
+    public Transform content2;
+    public Transform scriptPanel;
 
     int player = 1;
     string title1 = "Bot1";
@@ -33,13 +34,16 @@ public class Setup : MonoBehaviour
         player++;
         if (player == 2)
         {
-            header.color = Color.red;
+            header.GetComponent<Image>().sprite = Resources.Load<Sprite>("Head_setup_2");
             title.text = title2;
-            // очистить скрипт
+            content.gameObject.SetActive(false);
+            content2.gameObject.SetActive(true);
+            scriptPanel.GetComponent<ScrollRect>().content = content2.GetComponent<RectTransform>();
         }
         else
         {
-
+            this.gameObject.SetActive(false);
+            SceneManager.LoadScene("Arena", LoadSceneMode.Additive);
         }
     }
 
@@ -52,9 +56,11 @@ public class Setup : MonoBehaviour
         }
         else
         {
-            header.color = new Color(0, 0.5647059f, 0, 1);
+            header.GetComponent<Image>().sprite = Resources.Load<Sprite>("Head_setup_1");
             title.text = title1;
-            // загрузить скрипт
+            content2.gameObject.SetActive(false);
+            content.gameObject.SetActive(true);
+            scriptPanel.GetComponent<ScrollRect>().content = content.GetComponent<RectTransform>();
         }
     }
 }
