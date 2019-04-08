@@ -6,9 +6,10 @@ using UnityEngine.UI;
 public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
     GameObject element;
-    internal Type type;
+    //internal Type type;
+    public Type type;
 
-    internal enum Type { Movement, Event, Control, Sensor, Operator}
+    public enum Type { Movement, Event, Control, Sensor, Operator}
 
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -67,7 +68,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     public void ClearHighlited()
     {
         GameObject nextParent = this.gameObject;
-        while (nextParent.name != "Content")
+        while (!nextParent.name.Contains("Content"))
         {
             nextParent.GetComponentInChildren<Image>().color = Color.white;
             nextParent = nextParent.transform.parent.gameObject;
