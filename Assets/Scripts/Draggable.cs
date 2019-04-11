@@ -20,7 +20,6 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
             element = Instantiate(this.gameObject, this.transform.root);
             element.transform.GetComponentInChildren<Image>().SetNativeSize();
             element.transform.localScale = new Vector3(element.transform.localScale.x * 0.75f, element.transform.localScale.y * 0.75f);
-            Debug.Log(transform.parent.parent.parent.parent.name.Reverse().ToArray()[1]);
             element.GetComponent<Draggable>().type = (Type)Convert.ToInt16(this.transform.parent.parent.parent.parent.name.Reverse().ToArray()[1].ToString());
         }
         element.transform.SetParent(element.transform.root);
