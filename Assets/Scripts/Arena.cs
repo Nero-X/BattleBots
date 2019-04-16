@@ -10,13 +10,14 @@ public class Arena : MonoBehaviour
     public Button back;
     public GameObject player;
     public GameObject enemy;
-    public GameObject ground;
+    public Transform bulletPrefab;
 
     List<Transform> playerEvents = new List<Transform>();
     List<Transform> enemyEvents = new List<Transform>();
     const float playerSpeed = 1f;
     const float rotationSpeed = 1.2f;
-    const float bulletSpeed = 2f;
+    const float bulletSpeed = 300f;
+    const float reload = 1.5f;
 
     // Start is called before the first frame update
     void Start()
@@ -41,7 +42,7 @@ public class Arena : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (player == null || enemy == null) StopAllCoroutines();
     }
 
     void Back()
@@ -59,8 +60,9 @@ public class Arena : MonoBehaviour
                 case "Move(Clone)": yield return StartCoroutine(Move(player, Convert.ToInt32(instruction.GetComponentInChildren<Text>().text))); break; // Move((Vector2)player.transform.position + Vector2.up * 15, 10f)
                 case "TurnR(Clone)": yield return StartCoroutine(Turn(player, -Convert.ToInt32(instruction.GetComponentInChildren<Text>().text))); break;
                 case "TurnL(Clone)": yield return StartCoroutine(Turn(player, Convert.ToInt32(instruction.GetComponentInChildren<Text>().text))); break;
+                case "Shoot(Clone)": yield return StartCoroutine(Shoot(player)); break;
             }
-            Debug.Log("Executed " + instruction.name);
+            //Debug.Log("Executed " + instruction.name);
             if (instruction.GetChild(0).childCount > 1) instruction = instruction.GetChild(0).GetChild(1);
             else instruction = init;
         }
@@ -104,6 +106,15 @@ public class Arena : MonoBehaviour
             yield return new WaitForSeconds(Time.fixedDeltaTime);
         }
         //Debug.Log("Turn exit");
+    }
+
+    IEnumerator<WaitForSeconds> Shoot(GameObject player)
+    {
+        yield return new WaitForSeconds(reload);
+        Transform bullet = Instantiate(bulletPrefab);
+        bullet.position = player.transform.position + player.transform.up * 15;
+        bullet.rotation = player.transform.rotation;
+        bullet.GetComponent<Rigidbody2D>().AddForce(bullet.up * bulletSpeed, ForceMode2D.Impulse);
     }
 
     // Возможна подобная реализация процессов в будущем
