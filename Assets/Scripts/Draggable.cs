@@ -19,7 +19,9 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         {
             element = Instantiate(this.gameObject, this.transform.root);
             element.transform.GetComponentInChildren<Image>().SetNativeSize();
-            element.transform.localScale = new Vector3(element.transform.localScale.x * 0.75f, element.transform.localScale.y * 0.75f);
+            RectTransform rectTransform = element.transform.Find("Image").GetComponent<RectTransform>();
+            float ratio = rectTransform.rect.width / rectTransform.rect.height;
+            rectTransform.sizeDelta = new Vector2(30 * ratio, 30);
             element.GetComponent<Draggable>().type = (Type)Convert.ToInt16(this.transform.parent.parent.parent.parent.name.Reverse().ToArray()[1].ToString());
         }
         element.transform.SetParent(element.transform.root);
@@ -37,12 +39,13 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         element.GetComponent<CanvasGroup>().blocksRaycasts = true;
         if(eventData.pointerEnter.name == "Text") element.transform.SetParent(eventData.pointerEnter.transform.parent.parent);
         else element.transform.SetParent(eventData.pointerEnter.transform);
+        element.transform.SetAsFirstSibling();
         RectTransform parentRectTransform = element.transform.parent.GetComponent<RectTransform>();
         RectTransform elementRectTransform = element.GetComponentInChildren<Image>().rectTransform;
         //int dy = (int)Math.Round(Screen.height * (0.0559 + (Screen.height - 912) * (-0.00004763))); :D
         if (eventData.pointerEnter.name.Contains("Content") == false)
         {
-            element.transform.position = new Vector3(eventData.pointerEnter.transform.position.x + (elementRectTransform.sizeDelta.x - parentRectTransform.sizeDelta.x) * (Screen.height / 1200f),
+            element.transform.position = new Vector3(eventData.pointerEnter.transform.position.x + (elementRectTransform.sizeDelta.x - parentRectTransform.sizeDelta.x) * (Screen.height / 900f),
                 eventData.pointerEnter.transform.position.y - (int)Math.Round(Screen.height * 0.055));
         }
     }

@@ -42,6 +42,7 @@ public class Setup : MonoBehaviour
         }
         else
         {
+            player--;
             this.gameObject.SetActive(false);
             SceneManager.LoadScene("Arena", LoadSceneMode.Additive);
         }
