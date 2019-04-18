@@ -39,8 +39,6 @@ public class Arena : MonoBehaviour
         }
         foreach (Transform x in playerEvents) StartCoroutine(Execute(x, player));
         foreach (Transform x in enemyEvents) StartCoroutine(Execute(x, enemy));
-        /*foreach (Transform x in playerEvents) new Process(x, player);
-        foreach (Transform x in enemyEvents) new Process(x, enemy);*/
     }
 
     // Update is called once per frame
@@ -67,7 +65,7 @@ public class Arena : MonoBehaviour
                 case "TurnL(Clone)": yield return StartCoroutine(Turn(player, Convert.ToInt32(instruction.GetComponentInChildren<Text>().text))); break;
                 case "Shoot(Clone)": yield return StartCoroutine(Shoot(player)); break;
             }
-            Debug.Log("Executed " + instruction.name);
+            //Debug.Log("Executed " + instruction.name);
             if (instruction.GetChild(0).childCount > 1) instruction = instruction.GetChild(0).GetChild(0);
             else instruction = init;
         }
