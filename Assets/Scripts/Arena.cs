@@ -25,8 +25,8 @@ public class Arena : MonoBehaviour
     {
         back.onClick.AddListener(Back);
         canvas = SceneManager.GetSceneAt(0).GetRootGameObjects().Where(x => x.name == "Canvas").ToArray()[0].transform;
-        GameObject content = canvas.Find("ScriptPanel").Find("Viewport").Find("Content").gameObject;
-        GameObject content2 = canvas.Find("ScriptPanel").Find("Viewport").Find("Content2").gameObject;
+        GameObject content = canvas.Find("ScriptPanel").Find("Viewport").Find("ContentDZ").gameObject;
+        GameObject content2 = canvas.Find("ScriptPanel").Find("Viewport").Find("Content2DZ").gameObject;
         for (int i = 0; i < content.transform.childCount; i++)
         {
             //if (content.transform.GetChild(i).GetComponent<Draggable>().type == Draggable.Type.Movement) playerEvents.Add(content.transform.GetChild(i));
@@ -65,7 +65,7 @@ public class Arena : MonoBehaviour
                 case "TurnL(Clone)": yield return StartCoroutine(Turn(player, Convert.ToInt32(instruction.GetChild(0).Find("InputField").GetComponentInChildren<Text>().text))); break;
                 case "Shoot(Clone)": yield return StartCoroutine(Shoot(player)); break;
             }
-            Debug.Log("Executed " + instruction.name);
+            //Debug.Log("Executed " + instruction.name);
             if (instruction.GetChild(0).GetChild(0).name.Contains("Clone")) instruction = instruction.GetChild(0).GetChild(0);
             else instruction = init;
         }
@@ -73,7 +73,7 @@ public class Arena : MonoBehaviour
 
     IEnumerator<WaitForSeconds> Move(GameObject player, int arg) // заменить тип arg на object или gameobject
     {
-        Debug.Log("Move call");
+        //Debug.Log("Move call");
         Vector2 target = (Vector2)player.transform.position + (Vector2)player.transform.up * arg;
         while(Vector2.Distance(player.transform.position, target) >= playerSpeed)
         {
@@ -81,26 +81,26 @@ public class Arena : MonoBehaviour
             player.transform.position = Vector2.MoveTowards(player.transform.position, target, playerSpeed);
             yield return new WaitForSeconds(Time.fixedDeltaTime);
         }
-        Debug.Log("Move exit");
+        //Debug.Log("Move exit");
     }
 
     IEnumerator<WaitForSeconds> Turn(GameObject player, int arg)
     {
-        Debug.Log("Turn call");
+        //Debug.Log("Turn call");
         Quaternion target = Quaternion.Euler(player.transform.rotation.eulerAngles.x, player.transform.rotation.eulerAngles.y, player.transform.rotation.eulerAngles.z + arg);
-        Debug.Log($"Turning {player} to {arg} deg ({target.eulerAngles})");
+        //Debug.Log($"Turning {player} to {arg} deg ({target.eulerAngles})");
         while (Quaternion.Angle(player.transform.rotation, target) >= rotationSpeed)
         {
             //Debug.Log("Moving " + player.transform.position + " to " + target);
             player.transform.rotation = Quaternion.RotateTowards(player.transform.rotation, target, rotationSpeed);
             yield return new WaitForSeconds(Time.fixedDeltaTime);
         }
-        Debug.Log("Turn exit");
+        //Debug.Log("Turn exit");
     }
 
     IEnumerator<WaitForSeconds> Shoot(GameObject player)
     {
-        Debug.Log("Shoot call");
+        //Debug.Log("Shoot call");
         yield return new WaitForSeconds(reload);
         Transform bullet = Instantiate(bulletPrefab);
         bullet.position = player.transform.position + player.transform.up * 15;

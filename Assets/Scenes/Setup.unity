@@ -124,7 +124,7 @@ GameObject:
   - component: {fileID: 931122}
   - component: {fileID: 931121}
   m_Layer: 5
-  m_Name: Content
+  m_Name: ContentDZ
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1214,7 +1214,7 @@ GameObject:
   - component: {fileID: 807931802}
   - component: {fileID: 807931801}
   m_Layer: 5
-  m_Name: Content2
+  m_Name: Content2DZ
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2171,14 +2171,8 @@ PrefabInstance:
     - target: {fileID: 5841637612010391967, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
       propertyPath: m_Text
-      value: "\u0421\u043E\u0431\u044B\u0442\u0438\u0435"
+      value: "\u0421\u043E\u0431\u044B\u0442\u0438\u044F"
       objectReference: {fileID: 0}
-    - target: {fileID: 5841637612010391967, guid: 03d88889dbb70d94580aff98f16ec5dc,
-        type: 3}
-      propertyPath: m_FontData.m_Font
-      value: 
-      objectReference: {fileID: 12800000, guid: 3bf133e1c0235c84b80d3c21bb39a4e0,
-        type: 3}
     - target: {fileID: 5841637612010391967, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
       propertyPath: m_Color.r
@@ -2672,7 +2666,7 @@ PrefabInstance:
     - target: {fileID: 4718547039045234906, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
       propertyPath: m_Name
-      value: ElementsPanel (Act - 2)
+      value: ElementsPanel (Actions - 2)
       objectReference: {fileID: 0}
     - target: {fileID: 1124215010251052870, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
@@ -2682,7 +2676,7 @@ PrefabInstance:
     - target: {fileID: 1124215010251052870, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000015258789
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2974397529553245353, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
@@ -2897,14 +2891,8 @@ PrefabInstance:
     - target: {fileID: 5841637612010391967, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
       propertyPath: m_Text
-      value: "\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u0435"
+      value: "\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u044F"
       objectReference: {fileID: 0}
-    - target: {fileID: 5841637612010391967, guid: 03d88889dbb70d94580aff98f16ec5dc,
-        type: 3}
-      propertyPath: m_FontData.m_Font
-      value: 
-      objectReference: {fileID: 12800000, guid: 3bf133e1c0235c84b80d3c21bb39a4e0,
-        type: 3}
     - target: {fileID: 5841637612010391967, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
       propertyPath: m_Color.r
@@ -2962,6 +2950,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 069db403f32a6234f8cddb7ca7a74ab3,
         type: 3}
+    - target: {fileID: 8000704607950233202, guid: 03d88889dbb70d94580aff98f16ec5dc,
+        type: 3}
+      propertyPath: m_Value
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8000704607950233202, guid: 03d88889dbb70d94580aff98f16ec5dc,
+        type: 3}
+      propertyPath: m_Size
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 03d88889dbb70d94580aff98f16ec5dc, type: 3}
 --- !u!1 &1894724535
@@ -3407,7 +3405,7 @@ PrefabInstance:
     - target: {fileID: 1124215010251052870, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000015258789
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1124215010251052870, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
