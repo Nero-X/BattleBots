@@ -7,10 +7,9 @@ using UnityEngine.UI;
 public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
     GameObject element;
-    //internal Type type;
-    public Type type;
+    internal Type type;
 
-    public enum Type { Movement, Event, Action}
+    internal enum Type { Movement, Event, Action}
 
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -36,21 +35,26 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (eventData.hovered.Exists(x => x.name.Contains("DZ")) || eventData.hovered.Count == 0)
+        try
         {
-            element.GetComponent<CanvasGroup>().blocksRaycasts = true;
-            if (eventData.pointerEnter.name == "Text") element.transform.SetParent(eventData.pointerEnter.transform.parent.parent);
-            else element.transform.SetParent(eventData.pointerEnter.transform);
-            element.transform.SetAsFirstSibling();
-            RectTransform parentRectTransform = element.transform.parent.GetComponent<RectTransform>();
-            RectTransform elementRectTransform = element.GetComponentInChildren<Image>().rectTransform;
-            if (eventData.pointerEnter.name.Contains("Content") == false)
+            if (eventData.hovered.Exists(x => x.name.Contains("DZ") || x.name.Contains("Clone")) || eventData.hovered.Count == 0)
             {
-                element.transform.position = new Vector3(eventData.pointerEnter.transform.position.x + (elementRectTransform.sizeDelta.x - parentRectTransform.sizeDelta.x) * (Screen.height / 900f),
-                    eventData.pointerEnter.transform.position.y - (int)Math.Round(Screen.height * 0.055));
+                element.GetComponent<CanvasGroup>().blocksRaycasts = true;
+                if (eventData.pointerEnter.name == "Text") element.transform.SetParent(eventData.pointerEnter.transform.parent.parent);
+                else element.transform.SetParent(eventData.pointerEnter.transform);
+                if (element.transform.parent.name == "Viewport") throw new UnityException();
+                element.transform.SetAsFirstSibling();
+                RectTransform parentRectTransform = element.transform.parent.GetComponent<RectTransform>();
+                RectTransform elementRectTransform = element.GetComponentInChildren<Image>().rectTransform;
+                if (eventData.pointerEnter.name.Contains("Content") == false)
+                {
+                    element.transform.position = new Vector3(eventData.pointerEnter.transform.position.x + (elementRectTransform.sizeDelta.x - parentRectTransform.sizeDelta.x) * (Screen.height / 900f),
+                        eventData.pointerEnter.transform.position.y - (int)Math.Round(Screen.height * 0.055));
+                }
             }
+            else Destroy(element);
         }
-        else Destroy(element);
+        catch (UnityException) { Destroy(element); }
     }
 
     public void OnPointerEnter(PointerEventData eventData)

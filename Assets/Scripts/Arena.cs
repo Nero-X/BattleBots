@@ -11,6 +11,7 @@ public class Arena : MonoBehaviour
     public GameObject player;
     public GameObject enemy;
     public Transform bulletPrefab;
+    // TODO: массив игроков и массив списков команд
 
     List<Transform> playerEvents = new List<Transform>();
     List<Transform> enemyEvents = new List<Transform>();
@@ -64,9 +65,14 @@ public class Arena : MonoBehaviour
                 case "TurnR(Clone)": yield return StartCoroutine(Turn(player, -Convert.ToInt32(instruction.GetChild(0).Find("InputField").GetComponentInChildren<Text>().text))); break;
                 case "TurnL(Clone)": yield return StartCoroutine(Turn(player, Convert.ToInt32(instruction.GetChild(0).Find("InputField").GetComponentInChildren<Text>().text))); break;
                 case "Shoot(Clone)": yield return StartCoroutine(Shoot(player)); break;
+                case "Look at enemy(Clone)": yield return StartCoroutine(Turn(player, Vector2.SignedAngle(player.transform.up, ((player == this.player ? enemy.transform.position : this.player.transform.position) - player.transform.position).normalized))); break;
             }
             //Debug.Log("Executed " + instruction.name);
-            if (instruction.GetChild(0).GetChild(0).name.Contains("Clone")) instruction = instruction.GetChild(0).GetChild(0);
+            if (instruction.GetChild(0).childCount > 0)
+            {
+                if (instruction.GetChild(0).GetChild(0).name.Contains("Clone")) instruction = instruction.GetChild(0).GetChild(0);
+                else instruction = init;
+            }
             else instruction = init;
         }
     }
@@ -84,14 +90,13 @@ public class Arena : MonoBehaviour
         //Debug.Log("Move exit");
     }
 
-    IEnumerator<WaitForSeconds> Turn(GameObject player, int arg)
+    IEnumerator<WaitForSeconds> Turn(GameObject player, float arg)
     {
         //Debug.Log("Turn call");
         Quaternion target = Quaternion.Euler(player.transform.rotation.eulerAngles.x, player.transform.rotation.eulerAngles.y, player.transform.rotation.eulerAngles.z + arg);
-        //Debug.Log($"Turning {player} to {arg} deg ({target.eulerAngles})");
+        //Debug.Log($"Turning to {arg} deg ({target.eulerAngles})");
         while (Quaternion.Angle(player.transform.rotation, target) >= rotationSpeed)
         {
-            //Debug.Log("Moving " + player.transform.position + " to " + target);
             player.transform.rotation = Quaternion.RotateTowards(player.transform.rotation, target, rotationSpeed);
             yield return new WaitForSeconds(Time.fixedDeltaTime);
         }
