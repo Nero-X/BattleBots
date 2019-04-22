@@ -16,9 +16,9 @@ public class Arena : MonoBehaviour
     List<Transform> playerEvents = new List<Transform>();
     List<Transform> enemyEvents = new List<Transform>();
     const float playerSpeed = 1f;
-    const float rotationSpeed = 1.2f;
+    const float rotationSpeed = 2f;
     const float bulletSpeed = 300f;
-    const float reload = 1.5f;
+    const float reload = 0.75f;
     Transform canvas;
 
     // Start is called before the first frame update
@@ -108,7 +108,7 @@ public class Arena : MonoBehaviour
         //Debug.Log("Shoot call");
         yield return new WaitForSeconds(reload);
         Transform bullet = Instantiate(bulletPrefab);
-        bullet.position = player.transform.position + player.transform.up * 15;
+        bullet.position = player.transform.position + player.transform.up * 25;
         bullet.rotation = player.transform.rotation;
         bullet.GetComponent<Rigidbody2D>().AddForce(bullet.up * bulletSpeed, ForceMode2D.Impulse);
     }

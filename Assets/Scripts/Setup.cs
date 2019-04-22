@@ -13,8 +13,7 @@ public class Setup : MonoBehaviour
     public Transform scriptPanel;
 
     int player = 1;
-    string title1 = "Bot1";
-    string title2 = "Bot2";
+    internal string[] titles = { "Bot1", "Bot2" };
 
     // Start is called before the first frame update
     void Start()
@@ -35,7 +34,7 @@ public class Setup : MonoBehaviour
         if (player == 2)
         {
             header.GetComponent<Image>().sprite = Resources.Load<Sprite>("Head_setup_2");
-            title.text = title2;
+            title.text = titles[1];
             content.gameObject.SetActive(false);
             content2.gameObject.SetActive(true);
             scriptPanel.GetComponent<ScrollRect>().content = content2.GetComponent<RectTransform>();
@@ -58,7 +57,7 @@ public class Setup : MonoBehaviour
         else
         {
             header.GetComponent<Image>().sprite = Resources.Load<Sprite>("Head_setup_1");
-            title.text = title1;
+            title.text = titles[0];
             content2.gameObject.SetActive(false);
             content.gameObject.SetActive(true);
             scriptPanel.GetComponent<ScrollRect>().content = content.GetComponent<RectTransform>();
