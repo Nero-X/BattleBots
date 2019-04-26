@@ -18,7 +18,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         canvas = SceneManager.GetSceneAt(0).GetRootGameObjects().Where(x => x.name == "Canvas").ToArray()[0].transform;
-        botName = canvas.GetComponent<Setup>().titles[this.transform.GetSiblingIndex() - 1];
+        botName = canvas.GetComponent<Setup>().titles[this.name == "Player" ? 0 : 1];
     }
 
     // Update is called once per frame
