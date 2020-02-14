@@ -61,19 +61,14 @@ public class Arena : MonoBehaviour
         {
             switch (instruction.name)
             {
-                case "Move(Clone)": yield return StartCoroutine(Move(player, Convert.ToInt32(instruction.GetChild(0).Find("InputField").GetComponentInChildren<Text>().text))); break;
-                case "TurnR(Clone)": yield return StartCoroutine(Turn(player, -Convert.ToInt32(instruction.GetChild(0).Find("InputField").GetComponentInChildren<Text>().text))); break;
-                case "TurnL(Clone)": yield return StartCoroutine(Turn(player, Convert.ToInt32(instruction.GetChild(0).Find("InputField").GetComponentInChildren<Text>().text))); break;
+                case "Move(Clone)": yield return StartCoroutine(Move(player, Convert.ToInt32(instruction.GetChild(0).Find("InputField (Arg0)").GetComponentInChildren<Text>().text))); break;
+                case "TurnR(Clone)": yield return StartCoroutine(Turn(player, -Convert.ToInt32(instruction.GetChild(0).Find("InputField (Arg0)").GetComponentInChildren<Text>().text))); break;
+                case "TurnL(Clone)": yield return StartCoroutine(Turn(player, Convert.ToInt32(instruction.GetChild(0).Find("InputField (Arg0)").GetComponentInChildren<Text>().text))); break;
                 case "Shoot(Clone)": yield return StartCoroutine(Shoot(player)); break;
                 case "Look at enemy(Clone)": yield return StartCoroutine(Turn(player, Vector2.SignedAngle(player.transform.up, ((player == this.player ? enemy.transform.position : this.player.transform.position) - player.transform.position).normalized))); break;
             }
-            //Debug.Log("Executed " + instruction.name);
-            if (instruction.GetChild(0).childCount > 0)
-            {
-                if (instruction.GetChild(0).GetChild(0).name.Contains("Clone")) instruction = instruction.GetChild(0).GetChild(0);
-                else instruction = init;
-            }
-            else instruction = init;
+            Transform next = instruction.Next();
+            instruction = next == null ? init : next;
         }
     }
 
