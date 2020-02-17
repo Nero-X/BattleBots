@@ -18,10 +18,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         else
         {
             element = Instantiate(this.gameObject, this.transform.root);
-            element.GetComponentInChildren<Image>().SetNativeSize();
-            RectTransform rectTransform = element.transform.GetChild(0).GetComponent<RectTransform>();
-            float ratio = rectTransform.rect.width / rectTransform.rect.height;
-            rectTransform.sizeDelta = new Vector2(30 * ratio, 30);
+            element.Shape();
             element.GetComponent<Draggable>().type = (Type)Convert.ToInt16(this.transform.parent.parent.parent.parent.name.Reverse().ToArray()[1].ToString());
         }
         element.transform.SetParent(element.transform.root);
@@ -73,8 +70,8 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     public void OnDrop(PointerEventData eventData)
     {
-        eventData.pointerEnter.GetComponentInChildren<Image>().color = Color.white;
         ClearHighlited();
+        eventData.pointerEnter.GetComponentInChildren<Image>().color = Color.white;
     }
 
     public void ClearHighlited()

@@ -14,12 +14,6 @@ public class Menu : MonoBehaviour
         exit.onClick.AddListener(Close);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     void NewGame()
     {
         SceneManager.LoadScene("Setup", LoadSceneMode.Single);
@@ -29,6 +23,4 @@ public class Menu : MonoBehaviour
     {
         Application.Quit();
     }
-
-
 }

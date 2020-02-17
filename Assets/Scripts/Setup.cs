@@ -34,12 +34,6 @@ public class Setup : MonoBehaviour
         help.onClick.AddListener(ShowHelp);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     private void Next()
     {
         player++;
@@ -85,6 +79,7 @@ public class Setup : MonoBehaviour
         public List<string> args;
         public Command child;
 
+        [JsonConstructor]
         public Command(float x, float y, string name, List<string> args, Command child)
         {
             this.x = x;
@@ -101,6 +96,16 @@ public class Setup : MonoBehaviour
             name = obj.name;
             args = obj.GetChild(0).Children().Where(x => x.name.Contains("Arg")).Select(x => x.GetComponent<InputField>().text).ToList();
             if(obj.Next() != null) child = new Command(obj.Next());
+        }
+
+        public void ToObject(Transform parent)
+        {
+            Transform original = GameObject.Find(name.Substring(0, name.Length - 7)).transform;
+            Transform clone = Instantiate(original, parent);
+            clone.localPosition = new Vector3(x, y);
+            clone.GetChild(0).Children().Where(x => x.name.Contains("Arg")).ToList().ForEach(x => x.GetComponent<InputField>().text = args[Convert.ToInt32("" + x.name.Reverse().ToArray()[1])]);
+            clone.gameObject.Shape();
+            if(child != null) child.ToObject(clone);
         }
     }
 
@@ -124,40 +129,26 @@ public class Setup : MonoBehaviour
         return JsonConvert.SerializeObject(lst, Formatting.Indented);
     }
 
-    private void Deserialize(string json)
+    private void Deserialize(string json, Transform content)
     {
-
+        List<Command> lst = JsonConvert.DeserializeObject<List<Command>>(json);
+        foreach (Command cmd in lst)
+        {
+            cmd.ToObject(content);
+        }
     }
 
     private void Load()
     {
-        
-        
+        string path = EditorUtility.OpenFilePanel("Открыть...", "", "json");
+        if(path.Length != 0)
+        {
+            Deserialize(File.ReadAllText(path), player == 1 ? content : content2);
+        }
     }
 
     private void ShowHelp()
     {
 
-    }
-}
-
-public static class Utility
-{
-    public static IEnumerable<Transform> Children(this Transform parent)
-    {
-        foreach (Transform tr in parent)
-        {
-            yield return tr;
-        }
-    }
-
-    public static Transform Next(this Transform parent)
-    {
-        if (parent.GetChild(0).childCount > 0)
-        {
-            if (parent.GetChild(0).GetChild(0).name.Contains("Clone")) return parent.GetChild(0).GetChild(0);
-            else return null;
-        }
-        else return null;
     }
 }
