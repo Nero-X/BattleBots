@@ -2,11 +2,11 @@
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.IO;
-using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
 using System;
 using Newtonsoft.Json;
+using SimpleFileBrowser;
 
 public class Setup : MonoBehaviour
 {
@@ -19,7 +19,6 @@ public class Setup : MonoBehaviour
     public Transform scriptPanel;
     public Button save;
     public Button load;
-    public Button help;
 
     int player = 1;
     internal string[] titles = { "Bot1", "Bot2" };
@@ -31,7 +30,7 @@ public class Setup : MonoBehaviour
         back.onClick.AddListener(Back);
         save.onClick.AddListener(Save);
         load.onClick.AddListener(Load);
-        help.onClick.AddListener(ShowHelp);
+        FileBrowser.SetFilters(false, new FileBrowser.Filter("JSON", ".json"));
     }
 
     private void Next()
@@ -101,22 +100,23 @@ public class Setup : MonoBehaviour
         public void ToObject(Transform parent)
         {
             Transform original = GameObject.Find(name.Substring(0, name.Length - 7)).transform;
+            if (parent.name.Contains("Content") == false) parent = parent.GetChild(0); 
             Transform clone = Instantiate(original, parent);
             clone.localPosition = new Vector3(x, y);
             clone.GetChild(0).Children().Where(x => x.name.Contains("Arg")).ToList().ForEach(x => x.GetComponent<InputField>().text = args[Convert.ToInt32("" + x.name.Reverse().ToArray()[1])]);
             clone.gameObject.Shape();
+            clone.SetAsFirstSibling();
             if(child != null) child.ToObject(clone);
         }
     }
 
     private void Save()
     {
-        string path = EditorUtility.SaveFilePanel("Сохранить как...", "", "script", "json");
-        if (path.Length != 0)
+        FileBrowser.ShowSaveDialog((path) =>
         {
             string res = Serialize(player == 1 ? content : content2);
             File.WriteAllText(path, res);
-        }
+        }, null);
     }
 
     private string Serialize(Transform content)
@@ -140,15 +140,9 @@ public class Setup : MonoBehaviour
 
     private void Load()
     {
-        string path = EditorUtility.OpenFilePanel("Открыть...", "", "json");
-        if(path.Length != 0)
+        FileBrowser.ShowLoadDialog((path) =>
         {
             Deserialize(File.ReadAllText(path), player == 1 ? content : content2);
-        }
-    }
-
-    private void ShowHelp()
-    {
-
+        }, null);
     }
 }
