@@ -11,14 +11,20 @@ public class Arena : MonoBehaviour
     public GameObject player;
     public GameObject enemy;
     public Transform bulletPrefab;
-    // TODO: массив игроков и массив списков команд
 
+    // Значения по умолчанию
+    public float playerSpeed = 1f;
+    public float rotationSpeed = 2f;
+    public float bulletSpeed = 300f;
+    public int bulletDamage = 10;
+    public float reloadTime = 0.75f;
+
+    // TODO: массив игроков и массив списков команд
     List<Transform> playerEvents = new List<Transform>();
     List<Transform> enemyEvents = new List<Transform>();
-    const float playerSpeed = 1f;
-    const float rotationSpeed = 2f;
-    const float bulletSpeed = 300f;
-    const float reload = 0.75f;
+    List<List<Command>> player1Commands;
+    List<List<Command>> player2Commands;
+    
     Transform canvas;
 
     // Start is called before the first frame update
@@ -26,8 +32,11 @@ public class Arena : MonoBehaviour
     {
         back.onClick.AddListener(Back);
         canvas = SceneManager.GetSceneAt(0).GetRootGameObjects().Where(x => x.name == "Canvas").ToArray()[0].transform;
-        GameObject content = canvas.Find("ScriptPanel").Find("Viewport").Find("ContentDZ").gameObject;
-        GameObject content2 = canvas.Find("ScriptPanel").Find("Viewport").Find("Content2DZ").gameObject;
+        Transform content = canvas.Find("ScriptPanel").Find("Viewport").Find("ContentDZ");
+        Transform content2 = canvas.Find("ScriptPanel").Find("Viewport").Find("Content2DZ");
+        player1Commands = BuildCommandLists(player, content);
+        player2Commands = BuildCommandLists(enemy, content2);
+        /*
         for (int i = 0; i < content.transform.childCount; i++)
         {
             //if (content.transform.GetChild(i).GetComponent<Draggable>().type == Draggable.Type.Movement) playerEvents.Add(content.transform.GetChild(i));
@@ -40,6 +49,25 @@ public class Arena : MonoBehaviour
         }
         foreach (Transform x in playerEvents) StartCoroutine(Execute(x, player));
         foreach (Transform x in enemyEvents) StartCoroutine(Execute(x, enemy));
+        */
+        StartCoroutine(StartProcessor(player1Commands));
+        StartCoroutine(StartProcessor(player2Commands));
+    }
+
+    IEnumerator<YieldInstruction> StartProcessor(List<List<Command>> commands)//////////////////////
+    {
+        bool needToStop = false;
+        if (commands.Count == 0) needToStop = true;
+        while(needToStop == false)
+        {
+            foreach(List<Command> lst in commands)
+            {
+                foreach(Command cmd in lst)
+                {
+                    yield return StartCoroutine(cmd.Execute());
+                }
+            }
+        }
     }
 
     // Update is called once per frame
@@ -72,6 +100,34 @@ public class Arena : MonoBehaviour
         }
     }
 
+    List<List<Command>> BuildCommandLists(GameObject player, Transform content)
+    {
+        List<List<Command>> lists = new List<List<Command>>();
+        foreach(Transform headCmd in content)
+        {
+            List<Command> lst = new List<Command>();
+            Transform cmdObj = headCmd;
+            Command cmdClass = null;
+            while(true)
+            {
+                switch (cmdObj.name)
+                {
+                    case "Move(Clone)": cmdClass = new MoveCommand(player, Convert.ToInt32(cmdObj.GetArgs()[0])); break;
+                    case "TurnR(Clone)": cmdClass = new TurnCommand(player, -Convert.ToInt32(cmdObj.GetArgs()[0])); break;
+                    case "TurnL(Clone)": cmdClass = new TurnCommand(player, Convert.ToInt32(cmdObj.GetArgs()[0])); break;
+                    case "Shoot(Clone)":  break;
+                    case "Look at enemy(Clone)": break;
+                }
+                lst.Add(cmdClass);
+                Transform next = cmdObj.Next();
+                if (next == null) break;
+                else cmdObj = next;
+            }
+            lists.Add(lst);
+        }
+        return lists;
+    }
+
     IEnumerator<WaitForSeconds> Move(GameObject player, int arg) // заменить тип arg на object или gameobject
     {
         //Debug.Log("Move call");
@@ -101,7 +157,7 @@ public class Arena : MonoBehaviour
     IEnumerator<WaitForSeconds> Shoot(GameObject player)
     {
         //Debug.Log("Shoot call");
-        yield return new WaitForSeconds(reload);
+        yield return new WaitForSeconds(reloadTime);
         Transform bullet = Instantiate(bulletPrefab);
         bullet.position = player.transform.position + player.transform.up * 25;
         bullet.rotation = player.transform.rotation;

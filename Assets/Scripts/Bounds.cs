@@ -2,8 +2,7 @@
 
 public class Bounds : MonoBehaviour
 {
-    public Action action;
-
+    public Action action; // Действие которое выполняется, если объект выходит за рамки арены
     public enum Action { Stop, Destroy }
 
     Vector2 min;

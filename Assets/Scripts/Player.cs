@@ -7,8 +7,12 @@ public class Player : MonoBehaviour
 {
     public int HP = 100;
     public Text HPText;
+    public float playerSpeed;
+    public float rotationSpeed;
+    public float bulletSpeed;
+    public float reloadTime;
+    public int damage;
 
-    const int damage = 10;
     string botName;
     Transform canvas;
     
@@ -17,6 +21,14 @@ public class Player : MonoBehaviour
     {
         canvas = SceneManager.GetSceneAt(0).GetRootGameObjects().Where(x => x.name == "Canvas").ToArray()[0].transform;
         botName = canvas.GetComponent<Setup>().titles[this.name == "Player" ? 0 : 1];
+        Arena arena = SceneManager.GetSceneAt(1).GetRootGameObjects().Where(x => x.name == "GameLogic").ToArray()[0].GetComponent<Arena>();
+
+        // На старте игры присваиваем значения по умолчанию
+        damage = arena.bulletDamage;
+        playerSpeed = arena.playerSpeed;
+        rotationSpeed = arena.rotationSpeed;
+        bulletSpeed = arena.bulletSpeed;
+        reloadTime = arena.reloadTime;
     }
 
     // Update is called once per frame
