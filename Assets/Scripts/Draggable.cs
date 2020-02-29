@@ -6,15 +6,15 @@ using UnityEngine.UI;
 
 public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    GameObject element;
-    internal Type type;
+    GameObject element; // Перетаскиваемый объект
+    internal Type type; // Тип команды (не используется)
 
     internal enum Type { Movement, Event, Action}
 
     public void OnBeginDrag(PointerEventData eventData)
     {
         eventData.hovered.Clear();
-        if (this.gameObject.name.Contains("Clone")) element = this.gameObject;
+        if (this.gameObject.name.Contains("Clone")) element = this.gameObject; // если перетаскиваем команду из списка команд - создаём копию, иначе перетаскиваем сам объект
         else
         {
             element = Instantiate(this.gameObject, this.transform.root);
@@ -27,23 +27,23 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     public void OnDrag(PointerEventData eventData)
     {
-        element.transform.position = eventData.position;
+        element.transform.position = eventData.position; // следование за курсором
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
         try
         {
-            if (eventData.hovered.Exists(x => x.name.Contains("DZ") || x.name.Contains("Clone")) || eventData.hovered.Count == 0)
+            if (eventData.hovered.Exists(x => x.name.Contains("DZ") || x.name.Contains("Clone")) || eventData.hovered.Count == 0) // перетаскивать можно только на content или другую команду
             {
                 element.GetComponent<CanvasGroup>().blocksRaycasts = true;
-                if (eventData.pointerEnter.name == "Text") element.transform.SetParent(eventData.pointerEnter.transform.parent.parent);
+                if (eventData.pointerEnter.name == "Text") element.transform.SetParent(eventData.pointerEnter.transform.parent.parent); // если перетащили на текст - задаем родителем Image
                 else element.transform.SetParent(eventData.pointerEnter.transform);
                 if (element.transform.parent.name == "Viewport") throw new UnityException();
-                element.transform.SetAsFirstSibling();
+                element.transform.SetAsFirstSibling(); // дочерняя команда - первая в списке
                 RectTransform parentRectTransform = element.transform.parent.GetComponent<RectTransform>();
                 RectTransform elementRectTransform = element.GetComponentInChildren<Image>().rectTransform;
-                if (eventData.pointerEnter.name.Contains("Content") == false)
+                if (eventData.pointerEnter.name.Contains("Content") == false) // если перетащили на команду, выравниваем по левому краю
                 {
                     element.transform.position = new Vector3(eventData.pointerEnter.transform.position.x + (elementRectTransform.sizeDelta.x - parentRectTransform.sizeDelta.x) * (Screen.height / 900f),
                         eventData.pointerEnter.transform.position.y - (int)Math.Round(Screen.height * 0.055));
@@ -74,6 +74,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         eventData.pointerEnter.GetComponentInChildren<Image>().color = Color.white;
     }
 
+    // снимает выделение со всех вышестоящих команд
     public void ClearHighlited()
     {
         GameObject nextParent = this.gameObject;
