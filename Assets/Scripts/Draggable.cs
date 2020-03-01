@@ -32,9 +32,10 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (eventData.hovered.Count == 0) eventData.hovered.Add(eventData.pointerEnter); // фикс пустого списка hovered
         try
         {
-            if (eventData.hovered.Exists(x => x.name.Contains("DZ") || x.name.Contains("Clone")) || eventData.hovered.Count == 0) // перетаскивать можно только на content или другую команду
+            if (eventData.hovered.Exists(x => x.name.Contains("DZ") || x.name.Contains("Clone"))) // перетаскивать можно только на content или другую команду
             {
                 element.GetComponent<CanvasGroup>().blocksRaycasts = true;
                 if (eventData.pointerEnter.name == "Text") element.transform.SetParent(eventData.pointerEnter.transform.parent.parent); // если перетащили на текст - задаем родителем Image
