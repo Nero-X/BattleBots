@@ -15,7 +15,11 @@ public class Player : MonoBehaviour
 
     string botName;
     Transform canvas;
-    
+
+    public delegate void EventHandler();
+    public event EventHandler OnCollisionWithPlayer;
+    public event EventHandler OnCollisionWithBullet;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -44,6 +48,12 @@ public class Player : MonoBehaviour
             Destroy(collision.gameObject);
             HP -= damage;
             HPText.text = botName + " HP: " + HP;
+            OnCollisionWithBullet?.Invoke();
+            Debug.Log($"OnCollisionWithBullet event called from {gameObject}");
+        }
+        if (collision.gameObject.tag == "Player")
+        {
+            OnCollisionWithPlayer?.Invoke();
         }
     }
 }

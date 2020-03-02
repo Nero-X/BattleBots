@@ -19,11 +19,13 @@ public class Arena : MonoBehaviour
     public int bulletDamage = 10;
     public float reloadTime = 0.75f;
 
-    // TODO: массив игроков и массив списков команд
+    // TODO(?): массив игроков и массив списков команд
     List<Transform> playerEvents = new List<Transform>();
     List<Transform> enemyEvents = new List<Transform>();
-    List<List<Command>> player1Commands;
-    List<List<Command>> player2Commands;
+
+    // Потоки команд "по умолчанию". TODO(?): Занести хранение потоков в Player.cs для поддержки множества игроков
+    Thread default1;
+    Thread default2;
     
     Transform canvas;
 
@@ -34,8 +36,8 @@ public class Arena : MonoBehaviour
         canvas = SceneManager.GetSceneAt(0).GetRootGameObjects().Where(x => x.name == "Canvas").ToArray()[0].transform;
         Transform content = canvas.Find("ScriptPanel").Find("Viewport").Find("ContentDZ");
         Transform content2 = canvas.Find("ScriptPanel").Find("Viewport").Find("Content2DZ");
-        player1Commands = BuildCommandLists(player, content);
-        player2Commands = BuildCommandLists(enemy, content2);
+        default1 = new Thread(this, BuildCommandLists(player, content), true);
+        default2 = new Thread(this, BuildCommandLists(enemy, content2), true);
         /*
         for (int i = 0; i < content.transform.childCount; i++)
         {
@@ -50,11 +52,13 @@ public class Arena : MonoBehaviour
         foreach (Transform x in playerEvents) StartCoroutine(Execute(x, player));
         foreach (Transform x in enemyEvents) StartCoroutine(Execute(x, enemy));
         */
-        StartCoroutine(StartProcessor(player1Commands));
-        StartCoroutine(StartProcessor(player2Commands));
+        /*StartCoroutine(StartProcessor(player1Commands));
+        StartCoroutine(StartProcessor(player2Commands));*/
+        default1.Run();
+        default2.Run();
     }
 
-    IEnumerator<YieldInstruction> StartProcessor(List<List<Command>> commands)//////////////////////
+    IEnumerator<YieldInstruction> StartProcessor(List<List<Command>> commands)////////////////////// List<Command>
     {
         bool needToStop = false;
         if (commands.Count == 0) needToStop = true;
@@ -73,7 +77,12 @@ public class Arena : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (player == null || enemy == null) StopAllCoroutines();
+        //if (player == null || enemy == null) StopAllCoroutines();
+        if (player == null || enemy == null)
+        {
+            default1.Stop(false);
+            default2.Stop(false);
+        }
     }
 
     void Back()
@@ -95,37 +104,70 @@ public class Arena : MonoBehaviour
                 case "Shoot(Clone)": yield return StartCoroutine(Shoot(player)); break;
                 case "Look at enemy(Clone)": yield return StartCoroutine(Turn(player, Vector2.SignedAngle(player.transform.up, ((player == this.player ? enemy.transform.position : this.player.transform.position) - player.transform.position).normalized))); break;
             }
-            Transform next = instruction.Next();
-            instruction = next == null ? init : next;
+            instruction = instruction.Next() ?? init;
         }
     }
 
-    List<List<Command>> BuildCommandLists(GameObject player, Transform content)
+    /*List<Command> BuildCommandLists(GameObject player, Transform content)
     {
-        List<List<Command>> lists = new List<List<Command>>();
+        List<Command> list = new List<Command>();
         foreach(Transform headCmd in content)
         {
             List<Command> lst = new List<Command>();
             Transform cmdObj = headCmd;
-            Command cmdClass = null;
+            bool eventFlag = false;
             while(true)
+            {
+                switch (cmdObj.name)
+                {
+                    case "Move(Clone)": lst.Add(new MoveCommand(player, Convert.ToInt32(cmdObj.GetArgs()[0]))); break;
+                    case "TurnR(Clone)": lst.Add(new TurnCommand(player, -Convert.ToInt32(cmdObj.GetArgs()[0]))); break;
+                    case "TurnL(Clone)": lst.Add(new TurnCommand(player, Convert.ToInt32(cmdObj.GetArgs()[0]))); break;
+                    case "Shoot(Clone)":  break;
+                    case "Look at enemy(Clone)": break;
+                    case "OnCollisionWithBullet(Clone)": player.GetComponent<Player>().OnCollisionWithBullet += () =>
+                    {
+                        new Thread(lst, false).Run();
+                        eventFlag = true;
+                    };
+                        break;
+                }
+                Transform next = cmdObj.Next();
+                if (next == null) break;
+                else cmdObj = next;
+            }
+            if(eventFlag == false) list.AddRange(lst);
+        }
+        return list;
+    }*/
+
+    List<Command> BuildCommandLists(GameObject player, Transform content)
+    {
+        List<Command> list = new List<Command>();
+        foreach (Transform headCmd in content)
+        {
+            List<Command> lst = null;
+            Transform cmdObj = headCmd;
+            Command cmdClass = null;
+            while (true)
             {
                 switch (cmdObj.name)
                 {
                     case "Move(Clone)": cmdClass = new MoveCommand(player, Convert.ToInt32(cmdObj.GetArgs()[0])); break;
                     case "TurnR(Clone)": cmdClass = new TurnCommand(player, -Convert.ToInt32(cmdObj.GetArgs()[0])); break;
                     case "TurnL(Clone)": cmdClass = new TurnCommand(player, Convert.ToInt32(cmdObj.GetArgs()[0])); break;
-                    case "Shoot(Clone)":  break;
+                    case "Shoot(Clone)": break;
                     case "Look at enemy(Clone)": break;
+                    case "OnCollisionWithBullet": player.GetComponent<Player>().OnCollisionWithBullet += () => new Thread(this, lst = new List<Command>(), false).Run(); break; // остановить дефолтный
                 }
-                lst.Add(cmdClass);
+                if (lst == null) list.Add(cmdClass);
+                else lst.Add(cmdClass);
                 Transform next = cmdObj.Next();
                 if (next == null) break;
                 else cmdObj = next;
             }
-            lists.Add(lst);
         }
-        return lists;
+        return list;
     }
 
     IEnumerator<WaitForSeconds> Move(GameObject player, int arg) // заменить тип arg на object или gameobject
