@@ -53,6 +53,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
             else Destroy(element);
         }
         catch (UnityException) { Destroy(element); }
+        ClearHighlited();
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -71,18 +72,15 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     public void OnDrop(PointerEventData eventData)
     {
-        ClearHighlited();
         eventData.pointerEnter.GetComponentInChildren<Image>().color = Color.white;
     }
 
-    // снимает выделение со всех вышестоящих команд
+    // Cнимает выделение со всех команд
     public void ClearHighlited()
     {
-        GameObject nextParent = this.gameObject;
-        while (!nextParent.name.Contains("Content"))
+        foreach(GameObject gameObject in FindObjectsOfType<GameObject>())
         {
-            nextParent.GetComponentInChildren<Image>().color = Color.white;
-            nextParent = nextParent.transform.parent.gameObject;
+            if (gameObject.name.Contains("Clone")) gameObject.GetComponentInChildren<Image>().color = Color.white;
         }
     }
 }
