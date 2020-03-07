@@ -17,10 +17,12 @@ public class Player : MonoBehaviour
 
     string botName;
     Transform canvas;
+    internal int secondsAlive = 0;
 
     public delegate void EventHandler();
     public event EventHandler OnCollisionWithPlayer;
     public event EventHandler OnCollisionWithBullet;
+    public event EventHandler OnTimer; // Вызывается каждую секунду
 
     // Start is called before the first frame update
     void Start()
@@ -35,6 +37,15 @@ public class Player : MonoBehaviour
         rotationSpeed = arena.rotationSpeed;
         bulletSpeed = arena.bulletSpeed;
         reloadTime = arena.reloadTime;
+
+        InvokeRepeating("Timer", 0, 1);
+    }
+
+    // Вызов события таймера
+    void Timer()
+    {
+        secondsAlive++;
+        OnTimer?.Invoke();
     }
 
     // Update is called once per frame
@@ -51,7 +62,6 @@ public class Player : MonoBehaviour
             HP -= damage;
             HPText.text = botName + " HP: " + HP;
             OnCollisionWithBullet?.Invoke();
-            Debug.Log($"OnCollisionWithBullet event called from {gameObject}");
         }
         if (collision.gameObject.tag == "Player")
         {

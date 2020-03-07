@@ -157,13 +157,25 @@ public class Arena : MonoBehaviour
                     case "TurnR(Clone)": cmdClass = new TurnCommand(player, -Convert.ToSingle(cmdObj.GetArgs()[0])); break;
                     case "TurnL(Clone)": cmdClass = new TurnCommand(player, Convert.ToSingle(cmdObj.GetArgs()[0])); break;
                     case "Shoot(Clone)": cmdClass = new ShootCommand(player, bulletPrefab); break;
-                    case "Look at enemy(Clone)": cmdClass = new TurnCommand(player, Vector2.SignedAngle(player.transform.up, ((player == this.player ? enemy.transform.position : this.player.transform.position) - player.transform.position).normalized)); break;
+                    case "Look at enemy(Clone)": cmdClass = new TurnCommand(player, player == this.player ? enemy.transform : this.player.transform); break;
                     case "OnCollisionWithBullet(Clone)": lst = new List<Command>(); player.GetComponent<Player>().OnCollisionWithBullet += () =>
                     {
-                        player.GetComponent<Player>().defaultThread.Pause(true);
                         var eventThread = new Thread(this, lst, false);
+                        player.GetComponent<Player>().defaultThread.Pause(true);
                         eventThread.Run();
                         eventThread.OnFinish += () => player.GetComponent<Player>().defaultThread.Resume();
+                    }; break;
+                    case "OnTimer(Clone)": lst = new List<Command>(); player.GetComponent<Player>().OnTimer += () =>
+                    {
+                        Debug.Log($"{player} called timer. Arg = {headCmd.GetArgs()[0]}. SecondsAlive = {player.GetComponent<Player>().secondsAlive}");
+                        if(player.GetComponent<Player>().secondsAlive % Convert.ToInt32(headCmd.GetArgs()[0]) == 0)
+                        {
+                            Debug.Log($"{player} handling timer event!");
+                            var eventThread = new Thread(this, lst, false);
+                            player.GetComponent<Player>().defaultThread.Pause(true);
+                            eventThread.Run();
+                            eventThread.OnFinish += () => player.GetComponent<Player>().defaultThread.Resume();
+                        }
                     }; break;
                 }
                 if (lst == null) list.Add(cmdClass);

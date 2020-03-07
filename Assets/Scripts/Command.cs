@@ -38,16 +38,23 @@ public class MoveCommand : Command
 public class TurnCommand : Command
 {
     private float arg;
+    private Transform obj;
 
     public TurnCommand(GameObject player, float arg) : base(player)
     {
         this.arg = arg;
     }
 
+    public TurnCommand(GameObject player, Transform lookAt) : base(player)
+    {
+        obj = lookAt;
+    }
+
     public override IEnumerator<YieldInstruction> Execute()
     {
         //Debug.Log("Turn call");
         float rotationSpeed = player.GetComponent<Player>().rotationSpeed;
+        if (obj) arg = Vector2.SignedAngle(player.transform.up, (obj.position - player.transform.position).normalized);
         Quaternion target = Quaternion.Euler(player.transform.rotation.eulerAngles.x, player.transform.rotation.eulerAngles.y, player.transform.rotation.eulerAngles.z + arg);
         //Debug.Log($"Turning to {arg} deg ({target.eulerAngles})");
         while (Quaternion.Angle(player.transform.rotation, target) >= rotationSpeed)
