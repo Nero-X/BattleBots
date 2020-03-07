@@ -23,10 +23,10 @@ public class Arena : MonoBehaviour
     List<Transform> playerEvents = new List<Transform>();
     List<Transform> enemyEvents = new List<Transform>();
 
-    // Потоки команд "по умолчанию". TODO(?): Занести хранение потоков в Player.cs для поддержки множества игроков
+    // Потоки команд "по умолчанию". TODO(?): Занести хранение (и выполнение?) потоков в Player.cs для поддержки множества игроков
     Thread default1;
     Thread default2;
-    
+
     Transform canvas;
 
     // Start is called before the first frame update
@@ -36,8 +36,8 @@ public class Arena : MonoBehaviour
         canvas = SceneManager.GetSceneAt(0).GetRootGameObjects().Where(x => x.name == "Canvas").ToArray()[0].transform;
         Transform content = canvas.Find("ScriptPanel").Find("Viewport").Find("ContentDZ");
         Transform content2 = canvas.Find("ScriptPanel").Find("Viewport").Find("Content2DZ");
-        default1 = new Thread(this, BuildCommandLists(player, content), true);
-        default2 = new Thread(this, BuildCommandLists(enemy, content2), true);
+        default1 = player.GetComponent<Player>().defaultThread = new Thread(this, BuildCommandLists(player, content), true);
+        default2 = enemy.GetComponent<Player>().defaultThread = new Thread(this, BuildCommandLists(enemy, content2), true);
         /*
         for (int i = 0; i < content.transform.childCount; i++)
         {
@@ -58,7 +58,7 @@ public class Arena : MonoBehaviour
         default2.Run();
     }
 
-    IEnumerator<YieldInstruction> StartProcessor(List<List<Command>> commands)////////////////////// List<Command>
+    /*IEnumerator<YieldInstruction> StartProcessor(List<List<Command>> commands)
     {
         bool needToStop = false;
         if (commands.Count == 0) needToStop = true;
@@ -72,7 +72,7 @@ public class Arena : MonoBehaviour
                 }
             }
         }
-    }
+    }*/
 
     // Update is called once per frame
     void Update()
@@ -91,7 +91,7 @@ public class Arena : MonoBehaviour
         canvas.gameObject.SetActive(true);
     }
 
-    IEnumerator<YieldInstruction> Execute(Transform init, GameObject player)
+    /*IEnumerator<YieldInstruction> Execute(Transform init, GameObject player)
     {
         Transform instruction = init;
         while (instruction.name.Contains("Clone"))
@@ -106,7 +106,7 @@ public class Arena : MonoBehaviour
             }
             instruction = instruction.Next() ?? init;
         }
-    }
+    }*/
 
     /*List<Command> BuildCommandLists(GameObject player, Transform content)
     {
@@ -154,14 +154,20 @@ public class Arena : MonoBehaviour
                 switch (cmdObj.name)
                 {
                     case "Move(Clone)": cmdClass = new MoveCommand(player, Convert.ToInt32(cmdObj.GetArgs()[0])); break;
-                    case "TurnR(Clone)": cmdClass = new TurnCommand(player, -Convert.ToInt32(cmdObj.GetArgs()[0])); break;
-                    case "TurnL(Clone)": cmdClass = new TurnCommand(player, Convert.ToInt32(cmdObj.GetArgs()[0])); break;
-                    case "Shoot(Clone)": break;
-                    case "Look at enemy(Clone)": break;
-                    case "OnCollisionWithBullet": player.GetComponent<Player>().OnCollisionWithBullet += () => new Thread(this, lst = new List<Command>(), false).Run(); break; // остановить дефолтный
+                    case "TurnR(Clone)": cmdClass = new TurnCommand(player, -Convert.ToSingle(cmdObj.GetArgs()[0])); break;
+                    case "TurnL(Clone)": cmdClass = new TurnCommand(player, Convert.ToSingle(cmdObj.GetArgs()[0])); break;
+                    case "Shoot(Clone)": cmdClass = new ShootCommand(player, bulletPrefab); break;
+                    case "Look at enemy(Clone)": cmdClass = new TurnCommand(player, Vector2.SignedAngle(player.transform.up, ((player == this.player ? enemy.transform.position : this.player.transform.position) - player.transform.position).normalized)); break;
+                    case "OnCollisionWithBullet(Clone)": lst = new List<Command>(); player.GetComponent<Player>().OnCollisionWithBullet += () =>
+                    {
+                        player.GetComponent<Player>().defaultThread.Pause(true);
+                        var eventThread = new Thread(this, lst, false);
+                        eventThread.Run();
+                        eventThread.OnFinish += () => player.GetComponent<Player>().defaultThread.Resume();
+                    }; break;
                 }
                 if (lst == null) list.Add(cmdClass);
-                else lst.Add(cmdClass);
+                else if (cmdClass != null) lst.Add(cmdClass);
                 Transform next = cmdObj.Next();
                 if (next == null) break;
                 else cmdObj = next;

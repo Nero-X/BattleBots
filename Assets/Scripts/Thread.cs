@@ -4,14 +4,18 @@ using UnityEngine;
 
 public class Thread
 {
-    public bool IsStarted => Coroutine != null;
+    public bool IsStarted => ProcessCoroutine != null;
     public bool IsPaused = false;
     public bool IsLooped;
+
+    public delegate void EventHandler();
+    public event EventHandler OnFinish;
     
     private List<Command> Commands;
     private int Current;
     private MonoBehaviour Owner;
-    private Coroutine Coroutine;
+    private Coroutine ProcessCoroutine;
+    private Coroutine CommandCoroutine;
 
     public Thread(MonoBehaviour owner, List<Command> commands, bool loop)
     {
@@ -26,18 +30,19 @@ public class Thread
         {
             for (; Current < Commands.Count; Current++)
             {
-                yield return Owner.StartCoroutine(Commands[Current].Execute());
+                yield return CommandCoroutine = Owner.StartCoroutine(Commands[Current].Execute());
             }
             Current = 0;
         } while (IsLooped);
-        Coroutine = null;
+        ProcessCoroutine = null;
+        OnFinish?.Invoke();
     }
 
     public void Run()
     {
         Stop(true);
         Current = 0;
-        Coroutine = Owner.StartCoroutine(Process());
+        ProcessCoroutine = Owner.StartCoroutine(Process());
     }
 
     public void Pause(bool forced)
@@ -50,18 +55,17 @@ public class Thread
     {
         if(IsPaused)
         {
-            Coroutine = Owner.StartCoroutine(Process());
+            ProcessCoroutine = Owner.StartCoroutine(Process());
             IsPaused = false;
         }
     }
 
     public void Stop(bool forced)
     {
-        /*if (forced) Owner.StopAllCoroutines();
-        else Owner.StopCoroutine(Coroutine);*/
         if(IsStarted)
         {
-            Owner.StopCoroutine(Coroutine);
+            if (forced) Owner.StopCoroutine(CommandCoroutine);
+            Owner.StopCoroutine(ProcessCoroutine);
             IsPaused = false;
         }
     }
