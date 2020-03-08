@@ -4,18 +4,18 @@ using UnityEngine;
 
 public class Thread
 {
-    public bool IsStarted => ProcessCoroutine != null;
+    public bool IsRunning => ProcessCoroutine != null;
     public bool IsPaused = false;
     public bool IsLooped;
 
     public delegate void EventHandler();
-    public event EventHandler OnFinish;
+    public event EventHandler OnFinish; // Событие выполняется по завершению выполнения потока. Событие не выполняется для зацикленных потоков
     
-    private List<Command> Commands;
-    private int Current;
+    private List<Command> Commands; // Список команд
+    private int Current; // Индекс выполняющейся команды в списке
     private MonoBehaviour Owner;
-    private Coroutine ProcessCoroutine;
-    private Coroutine CommandCoroutine;
+    private Coroutine ProcessCoroutine; // Корутина потока
+    private Coroutine CommandCoroutine; // Корутина команды
 
     public Thread(MonoBehaviour owner, List<Command> commands, bool loop)
     {
@@ -47,8 +47,11 @@ public class Thread
 
     public void Pause(bool forced)
     {
-        Stop(forced);
-        IsPaused = true;
+        if(IsRunning)
+        {
+            Stop(forced);
+            IsPaused = true;
+        }
     }
 
     public void Resume()
@@ -60,12 +63,15 @@ public class Thread
         }
     }
 
+    // forced = true - принудительная(мнгновенная) остановка. forced = false - подождать оканчания выполнения текущей команды и завершить
     public void Stop(bool forced)
     {
-        if(IsStarted)
+        if(IsRunning)
         {
             if (forced) Owner.StopCoroutine(CommandCoroutine);
             Owner.StopCoroutine(ProcessCoroutine);
+            CommandCoroutine = null;
+            ProcessCoroutine = null;
             IsPaused = false;
         }
     }

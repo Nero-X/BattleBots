@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Command // MonoBehaviour для корутин
+public abstract class Command
 {
     protected GameObject player;
 
