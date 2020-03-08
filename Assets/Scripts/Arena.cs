@@ -61,6 +61,7 @@ public class Arena : MonoBehaviour
 
     List<Command> BuildCommandLists(GameObject player, Transform content)
     {
+        Transform _enemy = player == this.player ? enemy.transform : this.player.transform;
         List<Command> list = new List<Command>();
         foreach (Transform headCmd in content)
         {
@@ -75,12 +76,19 @@ public class Arena : MonoBehaviour
                     case "TurnR(Clone)": cmdClass = new TurnCommand(player, -Convert.ToSingle(cmdObj.GetArgs()[0])); break;
                     case "TurnL(Clone)": cmdClass = new TurnCommand(player, Convert.ToSingle(cmdObj.GetArgs()[0])); break;
                     case "Shoot(Clone)": cmdClass = new ShootCommand(player, bulletPrefab); break;
-                    case "Look at enemy(Clone)": cmdClass = new TurnCommand(player, player == this.player ? enemy.transform : this.player.transform); break;
+                    case "Look at enemy(Clone)": cmdClass = new TurnCommand(player, _enemy); break;
                     case "OnCollisionWithBullet(Clone)": lst = new List<Command>(); player.GetComponent<Player>().OnCollisionWithBullet += () => HandleEvent(player, lst); break;
+                    case "OnCollisionWithPlayer(Clone)": lst = new List<Command>(); player.GetComponent<Player>().OnCollisionWithPlayer += () => HandleEvent(player, lst); break;
+                    case "OnSuccessfulHit(Clone)": lst = new List<Command>(); _enemy.GetComponent<Player>().OnCollisionWithBullet += () => HandleEvent(player, lst); break;
                     case "OnTimer(Clone)": lst = new List<Command>(); player.GetComponent<Player>().OnTimer += () =>
                     {
                         if (player.GetComponent<Player>().secondsAlive % Convert.ToInt32(headCmd.GetArgs()[0]) == 0) HandleEvent(player, lst);
                     }; break;
+                    case "OnChangeHP(Clone)": lst = new List<Command>(); player.GetComponent<Player>().OnChangeHP += () =>
+                    {
+                        if (player.GetComponent<Player>().HP == Convert.ToInt32(headCmd.GetArgs()[0])) HandleEvent(player, lst);
+                    }; break;
+                    case "OnCollisionWithBounds(Clone)": lst = new List<Command>(); player.GetComponent<Bounds>().OnCollisionWithBounds += () => HandleEvent(player, lst); break;
                 }
                 if (lst == null) list.Add(cmdClass);
                 else if (cmdClass != null) lst.Add(cmdClass);

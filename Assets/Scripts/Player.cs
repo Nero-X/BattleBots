@@ -23,6 +23,7 @@ public class Player : MonoBehaviour
     public event EventHandler OnCollisionWithPlayer;
     public event EventHandler OnCollisionWithBullet;
     public event EventHandler OnTimer; // Вызывается каждую секунду
+    public event EventHandler OnChangeHP; // Вызывается при любом изменении кол-ва HP
 
     // Start is called before the first frame update
     void Start()
@@ -62,6 +63,7 @@ public class Player : MonoBehaviour
             HP -= damage;
             HPText.text = botName + " HP: " + HP;
             OnCollisionWithBullet?.Invoke();
+            OnChangeHP?.Invoke();
         }
         if (collision.gameObject.tag == "Player")
         {

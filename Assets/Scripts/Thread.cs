@@ -40,6 +40,7 @@ public class Thread
 
     public void Run()
     {
+        if (Commands.Count == 0) return;
         Stop(true);
         Current = 0;
         ProcessCoroutine = Owner.StartCoroutine(Process());
