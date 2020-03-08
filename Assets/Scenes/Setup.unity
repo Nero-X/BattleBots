@@ -1889,7 +1889,8 @@ PrefabInstance:
       propertyPath: m_Type
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 11402668, guid: c593f3276bf83614d9b8539187c23e8a, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: c593f3276bf83614d9b8539187c23e8a, type: 3}
 --- !u!1 &1174480490 stripped
 GameObject:
@@ -3125,7 +3126,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1260526709}
   m_Direction: 2
   m_Value: 0.9999998
-  m_Size: 0.31772262
+  m_Size: 0.31749943
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -3189,7 +3190,7 @@ PrefabInstance:
     - target: {fileID: 1124215010251052870, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000030517578
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2974397529553245353, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
