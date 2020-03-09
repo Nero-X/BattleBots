@@ -13,7 +13,7 @@ public class Player : MonoBehaviour
     public float reloadTime;
     public int damage;
 
-    public Thread defaultThread;
+    public Thread currentThread;
 
     string botName;
     Transform canvas;

@@ -7,6 +7,7 @@ public class Thread
     public bool IsRunning => ProcessCoroutine != null;
     public bool IsPaused = false;
     public bool IsLooped;
+    public int Priority { get => priority; set => priority = value >= 0 ? value : 0; } // Приоритет потока. Чем выше значение, тем выше приоритет. Минимальное значение 0
 
     public delegate void EventHandler();
     public event EventHandler OnFinish; // Событие выполняется по завершению выполнения потока. Событие не выполняется для зацикленных потоков
@@ -16,12 +17,14 @@ public class Thread
     private MonoBehaviour Owner;
     private Coroutine ProcessCoroutine; // Корутина потока
     private Coroutine CommandCoroutine; // Корутина команды
+    private int priority;
 
-    public Thread(MonoBehaviour owner, List<Command> commands, bool loop)
+    public Thread(MonoBehaviour owner, List<Command> commands, bool loop, int priority)
     {
         Owner = owner;
         Commands = commands;
         IsLooped = loop;
+        Priority = priority;
     }
 
     private IEnumerator Process()

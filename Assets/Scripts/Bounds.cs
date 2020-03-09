@@ -15,8 +15,8 @@ public class Bounds : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        min = Camera.current.ViewportToWorldPoint(new Vector2(0, 0));
-        max = Camera.current.ViewportToWorldPoint(new Vector2(1, 1));
+        min = Camera.main.ViewportToWorldPoint(new Vector2(0, 0));
+        max = Camera.main.ViewportToWorldPoint(new Vector2(1, 1));
         //Debug.Log($"min x = {min.x}, min y = {min.y}, max x = {max.x}, max y = {max.y}");
     }
 

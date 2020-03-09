@@ -36,8 +36,8 @@ public class Arena : MonoBehaviour
         Transform content2 = canvas.Find("ScriptPanel").Find("Viewport").Find("Content2DZ");
 
         // Создаем и запускаем потоки по умолчанию
-        default1 = player.GetComponent<Player>().defaultThread = new Thread(this, BuildCommandLists(player, content), true);
-        default2 = enemy.GetComponent<Player>().defaultThread = new Thread(this, BuildCommandLists(enemy, content2), true);
+        default1 = player.GetComponent<Player>().currentThread = new Thread(this, BuildCommandLists(player, content), true, 0);
+        default2 = enemy.GetComponent<Player>().currentThread = new Thread(this, BuildCommandLists(enemy, content2), true, 0);
         default1.Run();
         default2.Run();
     }
@@ -72,23 +72,38 @@ public class Arena : MonoBehaviour
             {
                 switch (cmdObj.name)
                 {
+                        // Movement
                     case "Move(Clone)": cmdClass = new MoveCommand(player, Convert.ToInt32(cmdObj.GetArgs()[0])); break;
                     case "TurnR(Clone)": cmdClass = new TurnCommand(player, -Convert.ToSingle(cmdObj.GetArgs()[0])); break;
                     case "TurnL(Clone)": cmdClass = new TurnCommand(player, Convert.ToSingle(cmdObj.GetArgs()[0])); break;
+                        // Actions
                     case "Shoot(Clone)": cmdClass = new ShootCommand(player, bulletPrefab); break;
                     case "Look at enemy(Clone)": cmdClass = new TurnCommand(player, _enemy); break;
-                    case "OnCollisionWithBullet(Clone)": lst = new List<Command>(); player.GetComponent<Player>().OnCollisionWithBullet += () => HandleEvent(player, lst); break;
-                    case "OnCollisionWithPlayer(Clone)": lst = new List<Command>(); player.GetComponent<Player>().OnCollisionWithPlayer += () => HandleEvent(player, lst); break;
-                    case "OnSuccessfulHit(Clone)": lst = new List<Command>(); _enemy.GetComponent<Player>().OnCollisionWithBullet += () => HandleEvent(player, lst); break;
-                    case "OnTimer(Clone)": lst = new List<Command>(); player.GetComponent<Player>().OnTimer += () =>
-                    {
-                        if (player.GetComponent<Player>().secondsAlive % Convert.ToInt32(headCmd.GetArgs()[0]) == 0) HandleEvent(player, lst);
-                    }; break;
-                    case "OnChangeHP(Clone)": lst = new List<Command>(); player.GetComponent<Player>().OnChangeHP += () =>
-                    {
-                        if (player.GetComponent<Player>().HP == Convert.ToInt32(headCmd.GetArgs()[0])) HandleEvent(player, lst);
-                    }; break;
-                    case "OnCollisionWithBounds(Clone)": lst = new List<Command>(); player.GetComponent<Bounds>().OnCollisionWithBounds += () => HandleEvent(player, lst); break;
+                        // Events
+                    case "OnCollisionWithBullet(Clone)":
+                        lst = new List<Command>();
+                        player.GetComponent<Player>().OnCollisionWithBullet += () => HandleEvent(player, new Thread(this, lst, false, 1)); break;
+                    case "OnCollisionWithPlayer(Clone)": 
+                        lst = new List<Command>(); 
+                        player.GetComponent<Player>().OnCollisionWithPlayer += () => HandleEvent(player, new Thread(this, lst, false, 1)); break;
+                    case "OnSuccessfulHit(Clone)": 
+                        lst = new List<Command>(); 
+                        _enemy.GetComponent<Player>().OnCollisionWithBullet += () => HandleEvent(player, new Thread(this, lst, false, 1)); break;
+                    case "OnTimer(Clone)": 
+                        lst = new List<Command>();
+                        player.GetComponent<Player>().OnTimer += () =>
+                        {
+                            if (player.GetComponent<Player>().secondsAlive % Convert.ToInt32(headCmd.GetArgs()[1]) == 0) HandleEvent(player, new Thread(this, lst, false, Convert.ToInt32(cmdObj.GetArgs()[0])));
+                        }; break;
+                    case "OnChangeHP(Clone)": 
+                        lst = new List<Command>();
+                        player.GetComponent<Player>().OnChangeHP += () =>
+                        {
+                            if (player.GetComponent<Player>().HP == Convert.ToInt32(headCmd.GetArgs()[1])) HandleEvent(player, new Thread(this, lst, false, Convert.ToInt32(cmdObj.GetArgs()[0])));
+                        }; break;
+                    case "OnCollisionWithBounds(Clone)": 
+                        lst = new List<Command>(); 
+                        player.GetComponent<Bounds>().OnCollisionWithBounds += () => HandleEvent(player, new Thread(this, lst, false, 1)); break;
                 }
                 if (lst == null) list.Add(cmdClass);
                 else if (cmdClass != null) lst.Add(cmdClass);
@@ -100,11 +115,27 @@ public class Arena : MonoBehaviour
         return list;
     }
 
-    void HandleEvent(GameObject player, List<Command> commands)
+    void HandleEvent(GameObject player, Thread thread)
     {
-        var eventThread = new Thread(this, commands, false);
-        player.GetComponent<Player>().defaultThread.Pause(true);
-        eventThread.Run();
-        eventThread.OnFinish += () => player.GetComponent<Player>().defaultThread.Resume();
+        Thread current = player.GetComponent<Player>().currentThread;
+        
+        // Сравнить приоритеты 
+        if(thread.Priority <= current.Priority) // проверить после текущего
+        {
+            //Debug.Log("Waiting...");
+            current.OnFinish += () => HandleEvent(player, thread);
+        }
+        else if (thread.Priority > current.Priority) // вытеснить текущий
+        {
+            //Debug.Log("Executing!");
+            current.Pause(true);
+            player.GetComponent<Player>().currentThread = thread;
+            thread.Run();
+            thread.OnFinish += () =>
+            {
+                player.GetComponent<Player>().currentThread = current;
+                current.Resume();
+            };
+        }
     }
 }
