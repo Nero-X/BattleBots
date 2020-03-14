@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Thread
 {
@@ -8,9 +9,29 @@ public class Thread
     public bool IsPaused = false;
     public bool IsLooped;
     public int Priority { get => priority; set => priority = value >= 0 ? value : 0; } // Приоритет потока. Чем выше значение, тем выше приоритет. Минимальное значение 0
+    public string Name;
 
     public delegate void EventHandler();
-    public event EventHandler OnFinish; // Событие выполняется по завершению выполнения потока. Событие не выполняется для зацикленных потоков
+    private event EventHandler _onFinish; // Событие выполняется по завершению выполнения потока. Событие не выполняется для зацикленных потоков
+    public event EventHandler OnFinish
+    {
+        add
+        {
+            /*if (_onFinish != null && _onFinish.GetInvocationList().Any(x => (x.Target as Thread).Name == (value.Target as Thread).Name)) Debug.Log("Skipped" + (value.Target as Thread).Name);
+            else
+            {
+                _onFinish += value;
+                Debug.Log("Added" + value.Method.Name);
+            }*/
+            _onFinish += value;
+            var a = _onFinish.GetInvocationList();
+            Debug.Log("Name = " + Name + ", a = " + a.Length);
+        }
+        remove
+        {
+            _onFinish -= value;
+        }
+    }
     
     private List<Command> Commands; // Список команд
     private int Current; // Индекс выполняющейся команды в списке
@@ -19,12 +40,13 @@ public class Thread
     private Coroutine CommandCoroutine; // Корутина команды
     private int priority;
 
-    public Thread(MonoBehaviour owner, List<Command> commands, bool loop, int priority)
+    public Thread(MonoBehaviour owner, List<Command> commands, bool loop, int priority, string name)
     {
         Owner = owner;
         Commands = commands;
         IsLooped = loop;
         Priority = priority;
+        Name = name;
     }
 
     private IEnumerator Process()
@@ -38,7 +60,9 @@ public class Thread
             Current = 0;
         } while (IsLooped);
         ProcessCoroutine = null;
-        OnFinish?.Invoke();
+        var b = _onFinish.GetInvocationList().Length;
+        Debug.Log("Name = " + Name + ", b = " + b);
+        _onFinish?.Invoke();
     }
 
     public void Run()
