@@ -3113,15 +3113,15 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 102456, guid: c593f3276bf83614d9b8539187c23e8a, type: 3}
+      propertyPath: m_Name
+      value: Tooltip
+      objectReference: {fileID: 0}
     - target: {fileID: 5786763779740267244, guid: c593f3276bf83614d9b8539187c23e8a,
         type: 3}
       propertyPath: _camera
       value: 
       objectReference: {fileID: 497409065}
-    - target: {fileID: 102456, guid: c593f3276bf83614d9b8539187c23e8a, type: 3}
-      propertyPath: m_Name
-      value: Tooltip
-      objectReference: {fileID: 0}
     - target: {fileID: 22404502, guid: c593f3276bf83614d9b8539187c23e8a, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 37.9
@@ -4870,7 +4870,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1260526709}
   m_Direction: 2
   m_Value: 0.9999998
-  m_Size: 0.31754312
+  m_Size: 0.31749943
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

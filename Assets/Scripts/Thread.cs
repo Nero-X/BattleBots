@@ -9,30 +9,11 @@ public class Thread
     public bool IsPaused = false;
     public bool IsLooped;
     public int Priority { get => priority; set => priority = value >= 0 ? value : 0; } // Приоритет потока. Чем выше значение, тем выше приоритет. Минимальное значение 0
-    public string Name;
+    public string Name; // Имя потока
 
     public delegate void EventHandler();
-    private event EventHandler _onFinish; // Событие выполняется по завершению выполнения потока. Событие не выполняется для зацикленных потоков
-    public event EventHandler OnFinish
-    {
-        add
-        {
-            /*if (_onFinish != null && _onFinish.GetInvocationList().Any(x => (x.Target as Thread).Name == (value.Target as Thread).Name)) Debug.Log("Skipped" + (value.Target as Thread).Name);
-            else
-            {
-                _onFinish += value;
-                Debug.Log("Added" + value.Method.Name);
-            }*/
-            _onFinish += value;
-            var a = _onFinish.GetInvocationList();
-            Debug.Log("Name = " + Name + ", a = " + a.Length);
-        }
-        remove
-        {
-            _onFinish -= value;
-        }
-    }
-    
+    public event EventHandler OnFinish; // Событие выполняется по завершению выполнения потока. Событие не выполняется для зацикленных потоков
+
     private List<Command> Commands; // Список команд
     private int Current; // Индекс выполняющейся команды в списке
     private MonoBehaviour Owner;
@@ -60,9 +41,7 @@ public class Thread
             Current = 0;
         } while (IsLooped);
         ProcessCoroutine = null;
-        var b = _onFinish.GetInvocationList().Length;
-        Debug.Log("Name = " + Name + ", b = " + b);
-        _onFinish?.Invoke();
+        OnFinish?.Invoke();
     }
 
     public void Run()
