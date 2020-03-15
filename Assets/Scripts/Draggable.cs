@@ -38,9 +38,17 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
             if (eventData.hovered.Exists(x => x.name.Contains("DZ") || x.name.Contains("Clone"))) // перетаскивать можно только на content или другую команду
             {
                 element.GetComponent<CanvasGroup>().blocksRaycasts = true;
+
+                // Проверки
                 if (eventData.pointerEnter.name == "Text") element.transform.SetParent(eventData.pointerEnter.transform.parent.parent); // если перетащили на текст - задаем родителем Image
                 else element.transform.SetParent(eventData.pointerEnter.transform);
                 if (element.transform.parent.name == "Viewport") throw new UnityException();
+                if(element.transform.parent.name == "Image" && element.transform.parent.Children().Count(x => x.name.Contains("Clone")) == 2) // если родительская команда не последняя в списке, не присоединять
+                {
+                    element.transform.SetParent(element.transform.root);
+                    return;
+                }
+
                 element.transform.SetAsFirstSibling(); // дочерняя команда - первая в списке
                 RectTransform parentRectTransform = element.transform.parent.GetComponent<RectTransform>();
                 RectTransform elementRectTransform = element.GetComponentInChildren<Image>().rectTransform;
