@@ -7,9 +7,9 @@ using UnityEngine.UI;
 public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
     GameObject element; // Перетаскиваемый объект
-    internal Type type; // Тип команды (не используется)
+    public Type type; // Тип команды
 
-    internal enum Type { Movement, Event, Action}
+    public enum Type { Movement, Event, Action}
 
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -43,9 +43,10 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
                 if (eventData.pointerEnter.name == "Text") element.transform.SetParent(eventData.pointerEnter.transform.parent.parent); // если перетащили на текст - задаем родителем Image
                 else element.transform.SetParent(eventData.pointerEnter.transform);
                 if (element.transform.parent.name == "Viewport") throw new UnityException();
-                if(element.transform.parent.name == "Image" && element.transform.parent.Children().Count(x => x.name.Contains("Clone")) == 2) // если родительская команда не последняя в списке, не присоединять
+                if(element.transform.parent.name == "Image" && element.transform.parent.Children().Count(x => x.name.Contains("Clone")) == 2
+                    || element.GetComponent<Draggable>().type == Type.Event) // событие или если родительская команда не последняя в списке, не присоединять
                 {
-                    element.transform.SetParent(element.transform.root);
+                    element.transform.SetParent(element.transform.root.Find("ScriptPanel/Viewport").Children().Where(x => x.gameObject.activeInHierarchy).First());
                     return;
                 }
 
