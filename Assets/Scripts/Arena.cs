@@ -125,13 +125,10 @@ public class Arena : MonoBehaviour
         // Сравнить приоритеты 
         if(thread.Priority <= current.Priority) // проверить после текущего
         {
-            //Debug.Log("Waiting...");
             current.OnFinish += () => HandleEvent(player, thread);
         }
         else // вытеснить текущий
         {
-            //Debug.Log("Executing!");
-            //Debug.Log($"Thread '{thread.Name}' pushed current thread '{current.Name}'");
             current.Pause(true);
             player.GetComponent<Player>().currentThread = thread;
             thread.Run();

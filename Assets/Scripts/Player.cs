@@ -52,7 +52,11 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (HP <= 0) Destroy(this.gameObject);
+        if (HP <= 0)
+        {
+            currentThread.Stop(true);
+            Destroy(this.gameObject);
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
