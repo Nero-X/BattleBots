@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 22400254}
   - component: {fileID: 22342544}
   - component: {fileID: 11438706}
-  - component: {fileID: 11402668}
+  - component: {fileID: 5786763779740267244}
   m_Layer: 5
   m_Name: Tooltip
   m_TagString: Untagged
@@ -107,7 +107,7 @@ RectTransform:
   m_GameObject: {fileID: 102456}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 22404502}
   m_Father: {fileID: 0}
@@ -161,7 +161,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
---- !u!114 &11402668
+--- !u!114 &5786763779740267244
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -170,7 +170,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 102456}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69fc7a8b428206c42a0adae795722e9d, type: 3}
+  m_Script: {fileID: 11500000, guid: 1eee8d74a04b54340ba8229f32ff15c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   BGColor: {r: 1, g: 1, b: 1, a: 1}

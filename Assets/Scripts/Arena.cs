@@ -19,12 +19,10 @@ public class Arena : MonoBehaviour
     public int bulletDamage = 10;
     public float reloadTime = 0.75f;
 
-    // TODO: массив игроков и массив списков команд
-    List<Transform> playerEvents = new List<Transform>();
-    List<Transform> enemyEvents = new List<Transform>();
-    List<List<Command>> player1Commands;
-    List<List<Command>> player2Commands;
-    
+    // Потоки команд "по умолчанию". TODO(?): Занести хранение (и выполнение?) потоков в Player.cs для поддержки множества игроков
+    Thread default1;
+    Thread default2;
+
     Transform canvas;
 
     // Start is called before the first frame update
@@ -32,48 +30,27 @@ public class Arena : MonoBehaviour
     {
         back.onClick.AddListener(Back);
         canvas = SceneManager.GetSceneAt(0).GetRootGameObjects().Where(x => x.name == "Canvas").ToArray()[0].transform;
+
+        // Получаем скрипты всех игроков
         Transform content = canvas.Find("ScriptPanel").Find("Viewport").Find("ContentDZ");
         Transform content2 = canvas.Find("ScriptPanel").Find("Viewport").Find("Content2DZ");
-        player1Commands = BuildCommandLists(player, content);
-        player2Commands = BuildCommandLists(enemy, content2);
-        /*
-        for (int i = 0; i < content.transform.childCount; i++)
-        {
-            //if (content.transform.GetChild(i).GetComponent<Draggable>().type == Draggable.Type.Movement) playerEvents.Add(content.transform.GetChild(i));
-            playerEvents.Add(content.transform.GetChild(i));
-        }
-        for (int i = 0; i < content2.transform.childCount; i++)
-        {
-            //if (content2.transform.GetChild(i).GetComponent<Draggable>().type == Draggable.Type.Movement) enemyEvents.Add(content2.transform.GetChild(i));
-            enemyEvents.Add(content2.transform.GetChild(i));
-        }
-        foreach (Transform x in playerEvents) StartCoroutine(Execute(x, player));
-        foreach (Transform x in enemyEvents) StartCoroutine(Execute(x, enemy));
-        */
-        StartCoroutine(StartProcessor(player1Commands));
-        StartCoroutine(StartProcessor(player2Commands));
-    }
 
-    IEnumerator<YieldInstruction> StartProcessor(List<List<Command>> commands)//////////////////////
-    {
-        bool needToStop = false;
-        if (commands.Count == 0) needToStop = true;
-        while(needToStop == false)
-        {
-            foreach(List<Command> lst in commands)
-            {
-                foreach(Command cmd in lst)
-                {
-                    yield return StartCoroutine(cmd.Execute());
-                }
-            }
-        }
+        // Создаем и запускаем потоки по умолчанию
+        default1 = player.GetComponent<Player>().currentThread = new Thread(this, BuildCommandLists(player, content), true, 0, "default");
+        default2 = enemy.GetComponent<Player>().currentThread = new Thread(this, BuildCommandLists(enemy, content2), true, 0, "default");
+        default1.Run();
+        default2.Run();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (player == null || enemy == null) StopAllCoroutines();
+        // Конец игры
+        if (player == null || enemy == null)
+        {
+            default1.Stop(false);
+            default2.Stop(false);
+        }
     }
 
     void Back()
@@ -82,85 +59,84 @@ public class Arena : MonoBehaviour
         canvas.gameObject.SetActive(true);
     }
 
-    IEnumerator<YieldInstruction> Execute(Transform init, GameObject player)
+    List<Command> BuildCommandLists(GameObject player, Transform content)
     {
-        Transform instruction = init;
-        while (instruction.name.Contains("Clone"))
+        Transform _enemy = player == this.player ? enemy.transform : this.player.transform;
+        List<Command> list = new List<Command>();
+        foreach (Transform headCmd in content)
         {
-            switch (instruction.name)
-            {
-                case "Move(Clone)": yield return StartCoroutine(Move(player, Convert.ToInt32(instruction.GetChild(0).Find("InputField (Arg0)").GetComponentInChildren<Text>().text))); break;
-                case "TurnR(Clone)": yield return StartCoroutine(Turn(player, -Convert.ToInt32(instruction.GetChild(0).Find("InputField (Arg0)").GetComponentInChildren<Text>().text))); break;
-                case "TurnL(Clone)": yield return StartCoroutine(Turn(player, Convert.ToInt32(instruction.GetChild(0).Find("InputField (Arg0)").GetComponentInChildren<Text>().text))); break;
-                case "Shoot(Clone)": yield return StartCoroutine(Shoot(player)); break;
-                case "Look at enemy(Clone)": yield return StartCoroutine(Turn(player, Vector2.SignedAngle(player.transform.up, ((player == this.player ? enemy.transform.position : this.player.transform.position) - player.transform.position).normalized))); break;
-            }
-            Transform next = instruction.Next();
-            instruction = next == null ? init : next;
-        }
-    }
-
-    List<List<Command>> BuildCommandLists(GameObject player, Transform content)
-    {
-        List<List<Command>> lists = new List<List<Command>>();
-        foreach(Transform headCmd in content)
-        {
-            List<Command> lst = new List<Command>();
+            List<Command> lst = null;
             Transform cmdObj = headCmd;
             Command cmdClass = null;
-            while(true)
+            while (true)
             {
                 switch (cmdObj.name)
                 {
+                        // Movement
                     case "Move(Clone)": cmdClass = new MoveCommand(player, Convert.ToInt32(cmdObj.GetArgs()[0])); break;
-                    case "TurnR(Clone)": cmdClass = new TurnCommand(player, -Convert.ToInt32(cmdObj.GetArgs()[0])); break;
-                    case "TurnL(Clone)": cmdClass = new TurnCommand(player, Convert.ToInt32(cmdObj.GetArgs()[0])); break;
-                    case "Shoot(Clone)":  break;
-                    case "Look at enemy(Clone)": break;
+                    case "TurnR(Clone)": cmdClass = new TurnCommand(player, -Convert.ToSingle(cmdObj.GetArgs()[0])); break;
+                    case "TurnL(Clone)": cmdClass = new TurnCommand(player, Convert.ToSingle(cmdObj.GetArgs()[0])); break;
+                        // Actions
+                    case "Shoot(Clone)": cmdClass = new ShootCommand(player, bulletPrefab); break;
+                    case "Look at enemy(Clone)": cmdClass = new TurnCommand(player, _enemy); break;
+                        // Events
+                    case "OnCollisionWithBullet(Clone)":
+                        lst = new List<Command>();
+                        player.GetComponent<Player>().OnCollisionWithBullet += () => HandleEvent(player, new Thread(this, lst, false, 1, headCmd.name)); break;
+                    case "OnCollisionWithPlayer(Clone)": 
+                        lst = new List<Command>(); 
+                        player.GetComponent<Player>().OnCollisionWithPlayer += () => HandleEvent(player, new Thread(this, lst, false, 1, headCmd.name)); break;
+                    case "OnSuccessfulHit(Clone)": 
+                        lst = new List<Command>(); 
+                        _enemy.GetComponent<Player>().OnCollisionWithBullet += () => HandleEvent(player, new Thread(this, lst, false, 1, headCmd.name)); break;
+                    case "OnTimer(Clone)": 
+                        lst = new List<Command>();
+                        player.GetComponent<Player>().OnTimer += () =>
+                        {
+                            if (player.GetComponent<Player>().secondsAlive % Convert.ToInt32(headCmd.GetArgs()[1]) == 0) HandleEvent(player, new Thread(this, lst, false, Convert.ToInt32(cmdObj.GetArgs()[0]), headCmd.name));
+                        }; break;
+                    case "OnChangeHP(Clone)": 
+                        lst = new List<Command>();
+                        player.GetComponent<Player>().OnChangeHP += () =>
+                        {
+                            if (player.GetComponent<Player>().HP == Convert.ToInt32(headCmd.GetArgs()[1])) HandleEvent(player, new Thread(this, lst, false, Convert.ToInt32(cmdObj.GetArgs()[0]), headCmd.name));
+                        }; break;
+                    case "OnCollisionWithBounds(Clone)": 
+                        lst = new List<Command>(); 
+                        player.GetComponent<Bounds>().OnCollisionWithBounds += () => HandleEvent(player, new Thread(this, lst, false, 1, headCmd.name)); break;
                 }
-                lst.Add(cmdClass);
+                if (lst == null) list.Add(cmdClass);
+                else if (cmdClass != null) lst.Add(cmdClass);
                 Transform next = cmdObj.Next();
                 if (next == null) break;
                 else cmdObj = next;
             }
-            lists.Add(lst);
         }
-        return lists;
+        return list;
     }
 
-    IEnumerator<WaitForSeconds> Move(GameObject player, int arg) // заменить тип arg на object или gameobject
+    void HandleEvent(GameObject player, Thread thread)
     {
-        //Debug.Log("Move call");
-        Vector2 target = (Vector2)player.transform.position + (Vector2)player.transform.up * arg;
-        while(Vector2.Distance(player.transform.position, target) >= playerSpeed)
+        Thread current = player.GetComponent<Player>().currentThread;
+
+        // Запрет срабатывания события во время выполнения его обработчика
+        if (thread.Name == current.Name) return;
+
+        // Сравнить приоритеты 
+        if(thread.Priority <= current.Priority) // проверить после текущего
         {
-            //Debug.Log("Moving " + player.transform.position + " to " + target);
-            player.transform.position = Vector2.MoveTowards(player.transform.position, target, playerSpeed);
-            yield return new WaitForSeconds(Time.fixedDeltaTime);
+            current.OnFinish += () => HandleEvent(player, thread);
         }
-        //Debug.Log("Move exit");
-    }
-
-    IEnumerator<WaitForSeconds> Turn(GameObject player, float arg)
-    {
-        //Debug.Log("Turn call");
-        Quaternion target = Quaternion.Euler(player.transform.rotation.eulerAngles.x, player.transform.rotation.eulerAngles.y, player.transform.rotation.eulerAngles.z + arg);
-        //Debug.Log($"Turning to {arg} deg ({target.eulerAngles})");
-        while (Quaternion.Angle(player.transform.rotation, target) >= rotationSpeed)
+        else // вытеснить текущий
         {
-            player.transform.rotation = Quaternion.RotateTowards(player.transform.rotation, target, rotationSpeed);
-            yield return new WaitForSeconds(Time.fixedDeltaTime);
+            current.Pause(true);
+            player.GetComponent<Player>().currentThread = thread;
+            thread.Run();
+            thread.OnFinish += () =>
+            {
+                player.GetComponent<Player>().currentThread = current;
+                current.Resume();
+            };
         }
-        //Debug.Log("Turn exit");
-    }
-
-    IEnumerator<WaitForSeconds> Shoot(GameObject player)
-    {
-        //Debug.Log("Shoot call");
-        yield return new WaitForSeconds(reloadTime);
-        Transform bullet = Instantiate(bulletPrefab);
-        bullet.position = player.transform.position + player.transform.up * 25;
-        bullet.rotation = player.transform.rotation;
-        bullet.GetComponent<Rigidbody2D>().AddForce(bullet.up * bulletSpeed, ForceMode2D.Impulse);
     }
 }

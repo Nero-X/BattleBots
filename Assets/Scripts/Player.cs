@@ -13,9 +13,18 @@ public class Player : MonoBehaviour
     public float reloadTime;
     public int damage;
 
+    public Thread currentThread;
+
     string botName;
     Transform canvas;
-    
+    internal int secondsAlive = 0;
+
+    public delegate void EventHandler();
+    public event EventHandler OnCollisionWithPlayer;
+    public event EventHandler OnCollisionWithBullet;
+    public event EventHandler OnTimer; // Вызывается каждую секунду
+    public event EventHandler OnChangeHP; // Вызывается при любом изменении кол-ва HP
+
     // Start is called before the first frame update
     void Start()
     {
@@ -29,12 +38,25 @@ public class Player : MonoBehaviour
         rotationSpeed = arena.rotationSpeed;
         bulletSpeed = arena.bulletSpeed;
         reloadTime = arena.reloadTime;
+
+        InvokeRepeating("Timer", 0, 1);
+    }
+
+    // Вызов события таймера
+    void Timer()
+    {
+        secondsAlive++;
+        OnTimer?.Invoke();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (HP <= 0) Destroy(this.gameObject);
+        if (HP <= 0)
+        {
+            currentThread.Stop(true);
+            Destroy(this.gameObject);
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -44,6 +66,12 @@ public class Player : MonoBehaviour
             Destroy(collision.gameObject);
             HP -= damage;
             HPText.text = botName + " HP: " + HP;
+            OnCollisionWithBullet?.Invoke();
+            OnChangeHP?.Invoke();
+        }
+        if (collision.gameObject.tag == "Player")
+        {
+            OnCollisionWithPlayer?.Invoke();
         }
     }
 }
