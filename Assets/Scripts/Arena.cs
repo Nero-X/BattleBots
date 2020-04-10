@@ -80,7 +80,7 @@ public class Arena : MonoBehaviour
     IEnumerator<WaitForSeconds> Move(GameObject player, int arg) // заменить тип arg на object или gameobject
     {
         //Debug.Log("Move call");
-        Vector2 target = (Vector2)player.transform.position + (Vector2)player.transform.up * arg;
+        Vector2 target = (Vector2)player.transform.position + (Vector2)player.transform.forward * arg;
         while(Vector2.Distance(player.transform.position, target) >= playerSpeed)
         {
             //Debug.Log("Moving " + player.transform.position + " to " + target);
