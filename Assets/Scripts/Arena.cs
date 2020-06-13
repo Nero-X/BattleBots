@@ -93,13 +93,13 @@ public class Arena : MonoBehaviour
                         lst = new List<Command>();
                         player.GetComponent<Player>().OnTimer += () =>
                         {
-                            if (player.GetComponent<Player>().secondsAlive % Convert.ToInt32(headCmd.GetArgs()[1]) == 0) HandleEvent(player, new Thread(this, lst, false, Convert.ToInt32(cmdObj.GetArgs()[0]), headCmd.name));
+                            if (player.GetComponent<Player>().secondsAlive % Convert.ToInt32(headCmd.GetArgs()[0]) == 0) HandleEvent(player, new Thread(this, lst, false, 1, headCmd.name));
                         }; break;
                     case "OnChangeHP(Clone)": 
                         lst = new List<Command>();
                         player.GetComponent<Player>().OnChangeHP += () =>
                         {
-                            if (player.GetComponent<Player>().HP == Convert.ToInt32(headCmd.GetArgs()[1])) HandleEvent(player, new Thread(this, lst, false, Convert.ToInt32(cmdObj.GetArgs()[0]), headCmd.name));
+                            if (player.GetComponent<Player>().HP == Convert.ToInt32(headCmd.GetArgs()[0])) HandleEvent(player, new Thread(this, lst, false, 1, headCmd.name));
                         }; break;
                     case "OnCollisionWithBounds(Clone)": 
                         lst = new List<Command>(); 
