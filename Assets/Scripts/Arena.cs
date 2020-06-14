@@ -82,13 +82,13 @@ public class Arena : MonoBehaviour
                         // Events
                     case "OnCollisionWithBullet(Clone)":
                         lst = new List<Command>();
-                        player.GetComponent<Player>().OnCollisionWithBullet += () => HandleEvent(player, new Thread(this, lst, false, 1, headCmd.name)); break;
+                        player.GetComponent<Player>().OnCollisionWithBullet += () => HandleEvent(player, new Thread(this, lst, false, Convert.ToInt32(cmdObj.GetArgs()[0]), headCmd.name)); break;
                     case "OnCollisionWithPlayer(Clone)": 
                         lst = new List<Command>(); 
-                        player.GetComponent<Player>().OnCollisionWithPlayer += () => HandleEvent(player, new Thread(this, lst, false, 1, headCmd.name)); break;
+                        player.GetComponent<Player>().OnCollisionWithPlayer += () => HandleEvent(player, new Thread(this, lst, false, Convert.ToInt32(cmdObj.GetArgs()[0]), headCmd.name)); break;
                     case "OnSuccessfulHit(Clone)": 
                         lst = new List<Command>(); 
-                        _enemy.GetComponent<Player>().OnCollisionWithBullet += () => HandleEvent(player, new Thread(this, lst, false, 1, headCmd.name)); break;
+                        _enemy.GetComponent<Player>().OnCollisionWithBullet += () => HandleEvent(player, new Thread(this, lst, false, Convert.ToInt32(cmdObj.GetArgs()[0]), headCmd.name)); break;
                     case "OnTimer(Clone)": 
                         lst = new List<Command>();
                         player.GetComponent<Player>().OnTimer += () =>
@@ -103,7 +103,7 @@ public class Arena : MonoBehaviour
                         }; break;
                     case "OnCollisionWithBounds(Clone)": 
                         lst = new List<Command>(); 
-                        player.GetComponent<Bounds>().OnCollisionWithBounds += () => HandleEvent(player, new Thread(this, lst, false, 1, headCmd.name)); break;
+                        player.GetComponent<Bounds>().OnCollisionWithBounds += () => HandleEvent(player, new Thread(this, lst, false, Convert.ToInt32(cmdObj.GetArgs()[0]), headCmd.name)); break;
                 }
                 if (lst == null) list.Add(cmdClass);
                 else if (cmdClass != null) lst.Add(cmdClass);

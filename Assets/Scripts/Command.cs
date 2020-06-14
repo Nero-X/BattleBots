@@ -25,7 +25,7 @@ public class MoveCommand : Command
     public override IEnumerator<YieldInstruction> Execute()
     {
         float playerSpeed = player.GetComponent<Player>().playerSpeed;
-        Vector2 target = (Vector2)player.transform.position + (Vector2)player.transform.up * arg;
+        Vector2 target = (Vector2)player.transform.position + (Vector2)player.transform.forward * arg;
         while (Vector2.Distance(player.transform.position, target) >= playerSpeed)
         {
             //Debug.Log("Moving " + player.transform.position + " to " + target);
@@ -55,7 +55,7 @@ public class TurnCommand : Command
         //Debug.Log("Turn call");
         float rotationSpeed = player.GetComponent<Player>().rotationSpeed;
         if (obj) arg = Vector2.SignedAngle(player.transform.up, (obj.position - player.transform.position).normalized);
-        Quaternion target = Quaternion.Euler(player.transform.rotation.eulerAngles.x, player.transform.rotation.eulerAngles.y, player.transform.rotation.eulerAngles.z + arg);
+        Quaternion target = Quaternion.Euler(player.transform.rotation.eulerAngles.x, player.transform.rotation.eulerAngles.y + arg, player.transform.rotation.eulerAngles.z);
         //Debug.Log($"Turning to {arg} deg ({target.eulerAngles})");
         while (Quaternion.Angle(player.transform.rotation, target) >= rotationSpeed)
         {
@@ -82,8 +82,9 @@ public class ShootCommand : Command
         float bulletSpeed = player.GetComponent<Player>().bulletSpeed;
         yield return new WaitForSeconds(reloadTime);
         Transform bullet = Object.Instantiate(bulletPrefab);
-        bullet.position = player.transform.position + player.transform.up * 25;
-        bullet.rotation = player.transform.rotation;
+        bullet.position = player.transform.position + player.transform.forward * 25;
+        var pr = player.transform.rotation.eulerAngles;
+        bullet.rotation = Quaternion.Euler(pr.x + 90, pr.y, pr.z);
         bullet.GetComponent<Rigidbody2D>().AddForce(bullet.up * bulletSpeed, ForceMode2D.Impulse);
     }
 }
