@@ -6,22 +6,19 @@ using UnityEngine.UI;
 
 public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    GameObject element;
-    internal Type type;
+    GameObject element; // Перетаскиваемый объект
+    public Type type; // Тип команды
 
-    internal enum Type { Movement, Event, Action}
+    public enum Type { Movement, Event, Action}
 
     public void OnBeginDrag(PointerEventData eventData)
     {
         eventData.hovered.Clear();
-        if (this.gameObject.name.Contains("Clone")) element = this.gameObject;
+        if (this.gameObject.name.Contains("Clone")) element = this.gameObject; // если перетаскиваем команду из списка команд - создаём копию, иначе перетаскиваем сам объект
         else
         {
             element = Instantiate(this.gameObject, this.transform.root);
-            element.GetComponentInChildren<Image>().SetNativeSize();
-            RectTransform rectTransform = element.transform.GetChild(0).GetComponent<RectTransform>();
-            float ratio = rectTransform.rect.width / rectTransform.rect.height;
-            rectTransform.sizeDelta = new Vector2(30 * ratio, 30);
+            element.Shape();
             element.GetComponent<Draggable>().type = (Type)Convert.ToInt16(this.transform.parent.parent.parent.parent.name.Reverse().ToArray()[1].ToString());
         }
         element.transform.SetParent(element.transform.root);
@@ -30,23 +27,33 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     public void OnDrag(PointerEventData eventData)
     {
-        element.transform.position = eventData.position;
+        element.transform.position = eventData.position; // следование за курсором
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (eventData.hovered.Count == 0) eventData.hovered.Add(eventData.pointerEnter); // фикс пустого списка hovered
         try
         {
-            if (eventData.hovered.Exists(x => x.name.Contains("DZ") || x.name.Contains("Clone")) || eventData.hovered.Count == 0)
+            if (eventData.hovered.Exists(x => x.name.Contains("DZ") || x.name.Contains("Clone"))) // перетаскивать можно только на content или другую команду
             {
                 element.GetComponent<CanvasGroup>().blocksRaycasts = true;
-                if (eventData.pointerEnter.name == "Text") element.transform.SetParent(eventData.pointerEnter.transform.parent.parent);
+
+                // Проверки
+                if (eventData.pointerEnter.name == "Text") element.transform.SetParent(eventData.pointerEnter.transform.parent.parent); // если перетащили на текст - задаем родителем Image
                 else element.transform.SetParent(eventData.pointerEnter.transform);
                 if (element.transform.parent.name == "Viewport") throw new UnityException();
-                element.transform.SetAsFirstSibling();
+                if(element.transform.parent.name == "Image" && element.transform.parent.Children().Count(x => x.name.Contains("Clone")) == 2
+                    || element.GetComponent<Draggable>().type == Type.Event) // событие или если родительская команда не последняя в списке, не присоединять
+                {
+                    element.transform.SetParent(element.transform.root.Find("ScriptPanel/Viewport").Children().Where(x => x.gameObject.activeInHierarchy).First());
+                    return;
+                }
+
+                element.transform.SetAsFirstSibling(); // дочерняя команда - первая в списке
                 RectTransform parentRectTransform = element.transform.parent.GetComponent<RectTransform>();
                 RectTransform elementRectTransform = element.GetComponentInChildren<Image>().rectTransform;
-                if (eventData.pointerEnter.name.Contains("Content") == false)
+                if (eventData.pointerEnter.name.Contains("Content") == false) // если перетащили на команду, выравниваем по левому краю
                 {
                     element.transform.position = new Vector3(eventData.pointerEnter.transform.position.x + (elementRectTransform.sizeDelta.x - parentRectTransform.sizeDelta.x) * (Screen.height / 900f),
                         eventData.pointerEnter.transform.position.y - (int)Math.Round(Screen.height * 0.055));
@@ -55,6 +62,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
             else Destroy(element);
         }
         catch (UnityException) { Destroy(element); }
+        ClearHighlited();
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -74,16 +82,14 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     public void OnDrop(PointerEventData eventData)
     {
         eventData.pointerEnter.GetComponentInChildren<Image>().color = Color.white;
-        ClearHighlited();
     }
 
+    // Cнимает выделение со всех команд
     public void ClearHighlited()
     {
-        GameObject nextParent = this.gameObject;
-        while (!nextParent.name.Contains("Content"))
+        foreach(GameObject gameObject in FindObjectsOfType<GameObject>())
         {
-            nextParent.GetComponentInChildren<Image>().color = Color.white;
-            nextParent = nextParent.transform.parent.gameObject;
+            if (gameObject.name.Contains("Clone")) gameObject.GetComponentInChildren<Image>().color = Color.white;
         }
     }
 }
