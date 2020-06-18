@@ -12,7 +12,6 @@ public class Bounds : MonoBehaviour
     Vector2 max;
     const int force = 1;
 
-    // Start is called before the first frame update
     void Start()
     {
         min = Camera.main.ViewportToWorldPoint(new Vector2(0, 0));
@@ -20,7 +19,6 @@ public class Bounds : MonoBehaviour
         //Debug.Log($"min x = {min.x}, min y = {min.y}, max x = {max.x}, max y = {max.y}");
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (transform.position.x > max.x)

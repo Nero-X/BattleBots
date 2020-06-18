@@ -37,6 +37,16 @@ public static class ScriptingUtility
     // Возвращает список аргументов объекта команды
     public static List<string> GetArgs(this Transform command)
     {
-        return command.GetChild(0).Children().Where(x => x.name.Contains("Arg")).Select(x => x.GetComponent<InputField>().text).ToList();
+        List<Transform> argObjects = command.GetChild(0).Children().Where(x => x.name.Contains("Arg")).ToList();
+        List<string> args = new List<string>();
+        foreach(Transform transform in argObjects)
+        {
+            switch (transform.name.Split(' ')[0])
+            {
+                case "InputField": args.Add(transform.GetComponent<InputField>().text); break;
+                case "Slider": args.Add(transform.GetComponent<Slider>().value.ToString()); break;
+            }
+        }
+        return args;
     }
 }

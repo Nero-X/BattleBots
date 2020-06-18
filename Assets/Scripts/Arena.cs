@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using System;
 
 public class Arena : MonoBehaviour
 {
-    public Button back;
     public GameObject player;
     public GameObject enemy;
     public Transform bulletPrefab;
@@ -25,10 +23,8 @@ public class Arena : MonoBehaviour
 
     Transform canvas;
 
-    // Start is called before the first frame update
     void Start()
     {
-        back.onClick.AddListener(Back);
         canvas = SceneManager.GetSceneAt(0).GetRootGameObjects().Where(x => x.name == "Canvas").ToArray()[0].transform;
 
         // Получаем скрипты всех игроков
@@ -40,9 +36,11 @@ public class Arena : MonoBehaviour
         default2 = enemy.GetComponent<Player>().currentThread = new Thread(this, BuildCommandLists(enemy, content2), true, 0, "default");
         default1.Run();
         default2.Run();
+
+        // Делаем сцену арены активной
+        SceneManager.SetActiveScene(SceneManager.GetSceneAt(1));
     }
 
-    // Update is called once per frame
     void Update()
     {
         // Конец игры
@@ -51,13 +49,7 @@ public class Arena : MonoBehaviour
             default1.Stop(false);
             default2.Stop(false);
         }
-    }
-
-    void Back()
-    {
-        SceneManager.UnloadSceneAsync("Arena");
-        canvas.gameObject.SetActive(true);
-    }
+    }    
 
     List<Command> BuildCommandLists(GameObject player, Transform content)
     {
@@ -82,13 +74,13 @@ public class Arena : MonoBehaviour
                         // Events
                     case "OnCollisionWithBullet(Clone)":
                         lst = new List<Command>();
-                        player.GetComponent<Player>().OnCollisionWithBullet += () => HandleEvent(player, new Thread(this, lst, false, 1, headCmd.name)); break;
+                        player.GetComponent<Player>().OnCollisionWithBullet += () => HandleEvent(player, new Thread(this, lst, false, Convert.ToInt32(cmdObj.GetArgs()[0]), headCmd.name)); break;
                     case "OnCollisionWithPlayer(Clone)": 
                         lst = new List<Command>(); 
-                        player.GetComponent<Player>().OnCollisionWithPlayer += () => HandleEvent(player, new Thread(this, lst, false, 1, headCmd.name)); break;
+                        player.GetComponent<Player>().OnCollisionWithPlayer += () => HandleEvent(player, new Thread(this, lst, false, Convert.ToInt32(cmdObj.GetArgs()[0]), headCmd.name)); break;
                     case "OnSuccessfulHit(Clone)": 
                         lst = new List<Command>(); 
-                        _enemy.GetComponent<Player>().OnCollisionWithBullet += () => HandleEvent(player, new Thread(this, lst, false, 1, headCmd.name)); break;
+                        _enemy.GetComponent<Player>().OnCollisionWithBullet += () => HandleEvent(player, new Thread(this, lst, false, Convert.ToInt32(cmdObj.GetArgs()[0]), headCmd.name)); break;
                     case "OnTimer(Clone)": 
                         lst = new List<Command>();
                         player.GetComponent<Player>().OnTimer += () =>
@@ -103,7 +95,7 @@ public class Arena : MonoBehaviour
                         }; break;
                     case "OnCollisionWithBounds(Clone)": 
                         lst = new List<Command>(); 
-                        player.GetComponent<Bounds>().OnCollisionWithBounds += () => HandleEvent(player, new Thread(this, lst, false, 1, headCmd.name)); break;
+                        player.GetComponent<Bounds>().OnCollisionWithBounds += () => HandleEvent(player, new Thread(this, lst, false, Convert.ToInt32(cmdObj.GetArgs()[0]), headCmd.name)); break;
                 }
                 if (lst == null) list.Add(cmdClass);
                 else if (cmdClass != null) lst.Add(cmdClass);

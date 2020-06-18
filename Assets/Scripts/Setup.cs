@@ -23,7 +23,6 @@ public class Setup : MonoBehaviour
     int player = 1; // Номер игрока, который сейчас создает скрипт. 0 - главное меню
     internal string[] titles = { "Bot1", "Bot2" }; // Названия ботов
 
-    // Start is called before the first frame update
     void Start()
     {
         next.onClick.AddListener(Next);

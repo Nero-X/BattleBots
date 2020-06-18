@@ -1,12 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using System.Collections;
 
 public class Tooltip : MonoBehaviour
 {
     public static string text;
-    public static bool isUI;
     public static bool show;
 
     public Color BGColor = Color.white;
@@ -21,7 +18,6 @@ public class Tooltip : MonoBehaviour
     public Text boxText;
     public Camera _camera;
     public float speed = 40; // скорость плавного затухания и проявления
-    //public float delay = 2f; //задержка появления в секундах
 
     private Image[] img;
     private Color BGColorFade;
@@ -37,7 +33,6 @@ public class Tooltip : MonoBehaviour
         BGColorFade.a = 0;
         textColorFade = textColor;
         textColorFade.a = 0;
-        isUI = false;
         show = false;
         foreach (Image bg in img)
         {
@@ -49,7 +44,6 @@ public class Tooltip : MonoBehaviour
 
     void LateUpdate()
     {
-        //bool show = false;
         boxText.fontSize = fontSize;
         if (show == false)
         {
@@ -72,7 +66,6 @@ public class Tooltip : MonoBehaviour
                     if (hit.transform.GetComponent<TooltipTextUI>())
                     {
                         text = hit.transform.GetComponent<TooltipTextUI>().text;
-                        //show = true;
                     }
                 }
             }
@@ -84,7 +77,6 @@ public class Tooltip : MonoBehaviour
                     if (hit.transform.GetComponent<TooltipTextUI>())
                     {
                         text = hit.transform.GetComponent<TooltipTextUI>().text;
-                        //show = true;
                     }
                 }
             }
@@ -96,7 +88,7 @@ public class Tooltip : MonoBehaviour
 
             float arrowShift = width / 4; // сдвиг позиции стрелки по Х
 
-            if (show || isUI)
+            if (show)
             {
                 float arrowPositionY = -(arrow.sizeDelta.y / 2 - 1); // позиция стрелки по умолчанию (внизу)
                 float arrowPositionX = arrowShift;
