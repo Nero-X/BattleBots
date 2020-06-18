@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using System;
 
 public class Arena : MonoBehaviour
 {
-    public Button back;
     public GameObject player;
     public GameObject enemy;
     public Transform bulletPrefab;
@@ -25,10 +23,8 @@ public class Arena : MonoBehaviour
 
     Transform canvas;
 
-    // Start is called before the first frame update
     void Start()
     {
-        back.onClick.AddListener(Back);
         canvas = SceneManager.GetSceneAt(0).GetRootGameObjects().Where(x => x.name == "Canvas").ToArray()[0].transform;
 
         // Получаем скрипты всех игроков
@@ -40,9 +36,11 @@ public class Arena : MonoBehaviour
         default2 = enemy.GetComponent<Player>().currentThread = new Thread(this, BuildCommandLists(enemy, content2), true, 0, "default");
         default1.Run();
         default2.Run();
+
+        // Делаем сцену арены активной
+        SceneManager.SetActiveScene(SceneManager.GetSceneAt(1));
     }
 
-    // Update is called once per frame
     void Update()
     {
         // Конец игры
@@ -51,13 +49,7 @@ public class Arena : MonoBehaviour
             default1.Stop(false);
             default2.Stop(false);
         }
-    }
-
-    void Back()
-    {
-        SceneManager.UnloadSceneAsync("Arena");
-        canvas.gameObject.SetActive(true);
-    }
+    }    
 
     List<Command> BuildCommandLists(GameObject player, Transform content)
     {

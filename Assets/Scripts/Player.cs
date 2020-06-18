@@ -25,7 +25,6 @@ public class Player : MonoBehaviour
     public event EventHandler OnTimer; // Вызывается каждую секунду
     public event EventHandler OnChangeHP; // Вызывается при любом изменении кол-ва HP
 
-    // Start is called before the first frame update
     void Start()
     {
         canvas = SceneManager.GetSceneAt(0).GetRootGameObjects().Where(x => x.name == "Canvas").ToArray()[0].transform;
@@ -49,7 +48,6 @@ public class Player : MonoBehaviour
         OnTimer?.Invoke();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (HP <= 0)
