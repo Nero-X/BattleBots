@@ -5,13 +5,29 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-    public int HP = 100;
-    public Text HPText;
     public float playerSpeed;
     public float rotationSpeed;
     public float bulletSpeed;
     public float reloadTime;
-    public int damage;
+    public int bulletDamage;
+    public Text HPText;
+    private int hp;
+    public int HP
+    {
+        get
+        {
+            return hp;
+        }
+        set
+        {
+            if (value != hp)
+            {
+                hp = value;
+                HPText.text = botName + " HP: " + hp;
+                OnChangeHP?.Invoke();
+            }
+        }
+    }
 
     public Thread currentThread;
 
@@ -32,11 +48,17 @@ public class Player : MonoBehaviour
         Arena arena = SceneManager.GetSceneAt(1).GetRootGameObjects().Where(x => x.name == "GameLogic").ToArray()[0].GetComponent<Arena>();
 
         // На старте игры присваиваем значения по умолчанию
-        damage = arena.bulletDamage;
+        bulletDamage = arena.bulletDamage;
         playerSpeed = arena.playerSpeed;
         rotationSpeed = arena.rotationSpeed;
         bulletSpeed = arena.bulletSpeed;
         reloadTime = arena.reloadTime;
+        HP = arena.HP;
+
+        if(!currentThread.IsRunning) currentThread.Run(); // процесс OnChangeHP(Clone) запускается 2 раза. Возможное решение: при запуске проверять isRunning
+
+        // Вариант реализации с событием OnStart (currentThread.Run() не нужен, сразу запускается процесс OnStart(Clone), который, по завершению, запустит процесс default)
+        //OnStart?.Invoke();
 
         InvokeRepeating("Timer", 0, 1);
     }
@@ -57,15 +79,12 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.name == "Bullet(Clone)")
+        if (collision.gameObject.name == "Bullet(Clone)")
         {
-            Destroy(collision.gameObject);
-            HP -= damage;
-            HPText.text = botName + " HP: " + HP;
+            HP -= collision.gameObject.GetComponent<Bullet>().Damage;
             OnCollisionWithBullet?.Invoke();
-            OnChangeHP?.Invoke();
         }
         if (collision.gameObject.tag == "Player")
         {

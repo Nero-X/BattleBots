@@ -49,4 +49,23 @@ public static class ScriptingUtility
         }
         return args;
     }
+
+    // Задаёт значения аргументов объекта команды
+    public static void SetArgs(this Transform command, List<string> argsList)
+    {
+        argsList.Reverse();
+        Stack<string> args = new Stack<string>(argsList);
+
+        // Сортировка на всякий случай
+        List<Transform> argObjects = command.GetChild(0).Children().Where(x => x.name.Contains("Arg")).OrderBy(x => x.name.Reverse().ToArray()[1]).ToList();
+
+        foreach (Transform transform in argObjects)
+        {
+            switch (transform.name.Split(' ')[0])
+            {
+                case "InputField": transform.GetComponent<InputField>().text = args.Pop(); break;
+                case "Slider": transform.GetComponent<Slider>().value = float.Parse(args.Pop()); break;
+            }
+        }
+    }
 }

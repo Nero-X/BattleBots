@@ -44,6 +44,7 @@ public class Tooltip : MonoBehaviour
 
     void LateUpdate()
     {
+        // optimize??
         boxText.fontSize = fontSize;
         if (show == false)
         {

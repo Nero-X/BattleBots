@@ -32,7 +32,7 @@ public class Thread
 
     private IEnumerator Process()
     {
-        do
+        if (Commands.Count > 0) do
         {
             for (; Current < Commands.Count; Current++)
             {
@@ -46,7 +46,6 @@ public class Thread
 
     public void Run()
     {
-        if (Commands.Count == 0) return;
         Stop(true);
         Current = 0;
         ProcessCoroutine = Owner.StartCoroutine(Process());
@@ -54,7 +53,7 @@ public class Thread
 
     public void Pause(bool forced)
     {
-        if(IsRunning)
+        if (IsRunning)
         {
             Stop(forced);
             IsPaused = true;
@@ -63,11 +62,12 @@ public class Thread
 
     public void Resume()
     {
-        if(IsPaused)
+        if (IsPaused)
         {
             ProcessCoroutine = Owner.StartCoroutine(Process());
             IsPaused = false;
         }
+        else Run();
     }
 
     // forced = true - принудительная(мнгновенная) остановка. forced = false - подождать оканчания выполнения текущей команды и завершить

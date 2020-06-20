@@ -104,7 +104,7 @@ public class Setup : MonoBehaviour
             if (parent.name.Contains("Content") == false) parent = parent.GetChild(0); // если родитель - команда, то присоединяем к Image
             Transform clone = Instantiate(original, parent);
             clone.localPosition = new Vector3(x, y);
-            clone.GetChild(0).Children().Where(x => x.name.Contains("Arg")).ToList().ForEach(x => x.GetComponent<InputField>().text = args[Convert.ToInt32("" + x.name.Reverse().ToArray()[1])]); // записываем аргументы
+            clone.SetArgs(args); // записываем аргументы
             clone.GetComponent<Draggable>().type = (Draggable.Type)Convert.ToInt16(original.transform.parent.parent.parent.parent.name.Reverse().ToArray()[1].ToString()); // выставляем тип команды
             clone.gameObject.Shape();
             clone.SetAsFirstSibling();
