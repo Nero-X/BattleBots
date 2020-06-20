@@ -7,7 +7,6 @@ public class MainMenu : MonoBehaviour
     public Button newGame;
     public Button exit;
 
-    // Start is called before the first frame update
     void Start()
     {
         newGame.onClick.AddListener(NewGame);

@@ -82,6 +82,7 @@ public class ShootCommand : Command
         Transform bullet = Object.Instantiate(bulletPrefab);
         bullet.position = player.transform.position + player.transform.forward * 25;
         bullet.up = player.transform.forward;
-        bullet.GetComponent<Rigidbody2D>().AddForce(bullet.up * bulletSpeed, ForceMode2D.Impulse);
+        bullet.GetComponent<Bullet>().Damage = player.GetComponent<Player>().bulletDamage;
+        bullet.GetComponent<Rigidbody>().AddForce(bullet.up * bulletSpeed, ForceMode.Impulse);
     }
 }
