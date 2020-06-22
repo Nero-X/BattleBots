@@ -8,8 +8,6 @@ public class Tooltip : MonoBehaviour
 
     public Color BGColor = Color.white;
     public Color textColor = Color.black;
-    public enum ProjectMode { Tooltip3D = 0, Tooltip2D = 1 };
-    public ProjectMode tooltipMode = ProjectMode.Tooltip3D;
     public int fontSize = 14; // размер шрифта
     public int maxWidth = 250; // максимальная ширина Tooltip
     public int border = 10; // ширина обводки
@@ -17,7 +15,7 @@ public class Tooltip : MonoBehaviour
     public RectTransform arrow;
     public Text boxText;
     public Camera _camera;
-    public float speed = 40; // скорость плавного затухания и проявления
+    public float speed = 10; // скорость плавного затухания и проявления
 
     private Image[] img;
     private Color BGColorFade;
@@ -40,12 +38,11 @@ public class Tooltip : MonoBehaviour
         }
         boxText.color = textColorFade;
         boxText.alignment = TextAnchor.MiddleCenter;
+        boxText.fontSize = fontSize;
     }
 
     void LateUpdate()
     {
-        // optimize??
-        boxText.fontSize = fontSize;
         if (show == false)
         {
             foreach (Image bg in img)
@@ -54,34 +51,8 @@ public class Tooltip : MonoBehaviour
             }
             boxText.color = Color.Lerp(boxText.color, textColorFade, speed * Time.deltaTime);
         }
-
         else
         {
-
-            if (tooltipMode == ProjectMode.Tooltip3D)
-            {
-                RaycastHit hit;
-                Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out hit))
-                {
-                    if (hit.transform.GetComponent<TooltipTextUI>())
-                    {
-                        text = hit.transform.GetComponent<TooltipTextUI>().text;
-                    }
-                }
-            }
-            else
-            {
-                RaycastHit2D hit = Physics2D.Raycast(_camera.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-                if (hit.transform != null)
-                {
-                    if (hit.transform.GetComponent<TooltipTextUI>())
-                    {
-                        text = hit.transform.GetComponent<TooltipTextUI>().text;
-                    }
-                }
-            }
-
             boxText.text = text;
             float width = maxWidth;
             if (boxText.preferredWidth <= maxWidth - border) width = boxText.preferredWidth + border;
@@ -89,38 +60,35 @@ public class Tooltip : MonoBehaviour
 
             float arrowShift = width / 4; // сдвиг позиции стрелки по Х
 
-            if (show)
+            float arrowPositionY = -(arrow.sizeDelta.y / 2 - 1); // позиция стрелки по умолчанию (внизу)
+            float arrowPositionX = arrowShift;
+
+            float curY = Input.mousePosition.y + box.sizeDelta.y / 2 + arrow.sizeDelta.y;
+            Vector3 arrowScale = new Vector3(1, 1, 1);
+            if (curY + box.sizeDelta.y / 2 > Screen.height) // если Tooltip выходит за рамки экрана по высоте
             {
-                float arrowPositionY = -(arrow.sizeDelta.y / 2 - 1); // позиция стрелки по умолчанию (внизу)
-                float arrowPositionX = arrowShift;
-
-                float curY = Input.mousePosition.y + box.sizeDelta.y / 2 + arrow.sizeDelta.y;
-                Vector3 arrowScale = new Vector3(1, 1, 1);
-                if (curY + box.sizeDelta.y / 2 > Screen.height) // если Tooltip выходит за рамки экрана, в данном случаи по высоте
-                {
-                    curY = Input.mousePosition.y - box.sizeDelta.y / 2 - arrow.sizeDelta.y;
-                    arrowPositionY = box.sizeDelta.y + (arrow.sizeDelta.y / 2 - 1);
-                    arrowScale = new Vector3(1, -1, 1); // отражение по вертикале
-                }
-
-                float curX = Input.mousePosition.x + arrowShift;
-                if (curX + box.sizeDelta.x / 2 > Screen.width)
-                {
-                    curX = Input.mousePosition.x - arrowShift;
-                    arrowPositionX = width - arrowShift;
-                }
-
-                box.anchoredPosition = new Vector2(curX, curY);
-
-                arrow.anchoredPosition = new Vector2(arrowPositionX, arrowPositionY);
-                arrow.localScale = arrowScale;
-
-                foreach (Image bg in img)
-                {
-                    bg.color = Color.Lerp(bg.color, BGColor, speed * Time.deltaTime);
-                }
-                boxText.color = Color.Lerp(boxText.color, textColor, speed * Time.deltaTime);
+                curY = Input.mousePosition.y - box.sizeDelta.y / 2 - arrow.sizeDelta.y;
+                arrowPositionY = box.sizeDelta.y + (arrow.sizeDelta.y / 2 - 1);
+                arrowScale = new Vector3(1, -1, 1); // отражение по вертикали
             }
+
+            float curX = Input.mousePosition.x + arrowShift;
+            if (curX + box.sizeDelta.x / 2 > Screen.width) // если Tooltip выходит за рамки экрана по ширине
+            {
+                curX = Input.mousePosition.x - arrowShift;
+                arrowPositionX = width - arrowShift;
+            }
+
+            box.anchoredPosition = new Vector2(curX, curY);
+
+            arrow.anchoredPosition = new Vector2(arrowPositionX, arrowPositionY);
+            arrow.localScale = arrowScale;
+
+            foreach (Image bg in img)
+            {
+                bg.color = Color.Lerp(bg.color, BGColor, speed * Time.deltaTime);
+            }
+            boxText.color = Color.Lerp(boxText.color, textColor, speed * Time.deltaTime);
         }
     }
 }

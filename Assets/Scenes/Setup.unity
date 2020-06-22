@@ -717,6 +717,7 @@ MonoBehaviour:
     \u0441\u043D\u0430\u0440\u044F\u0434 \u043F\u043E \u043D\u0430\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u044E
     \u043F\u0440\u044F\u043C\u043E \u043F\u0435\u0440\u0435\u0434 \u0441\u043E\u0431\u043E\u0439."
   delay: 2
+  duration: 5
 --- !u!1 &147910530
 GameObject:
   m_ObjectHideFlags: 0
@@ -871,6 +872,7 @@ MonoBehaviour:
     \u0431\u043E\u0442\u0430 \u0441 \u0433\u0440\u0430\u043D\u0438\u0446\u0430\u043C\u0438
     \u0430\u0440\u0435\u043D\u044B."
   delay: 2
+  duration: 5
 --- !u!1 &224558723
 GameObject:
   m_ObjectHideFlags: 0
@@ -1024,6 +1026,7 @@ MonoBehaviour:
   text: "\u0421\u0442\u043E\u043B\u043A\u043D\u043E\u0432\u0435\u043D\u0438\u0435
     \u0441 \u0434\u0440\u0443\u0433\u0438\u043C \u0431\u043E\u0442\u043E\u043C."
   delay: 2
+  duration: 5
 --- !u!1 &251698145
 GameObject:
   m_ObjectHideFlags: 0
@@ -2574,6 +2577,7 @@ MonoBehaviour:
   text: "\u041F\u043E\u043F\u0430\u0434\u0430\u043D\u0438\u0435 \u0441\u043D\u0430\u0440\u044F\u0434\u0430
     \u0432\u043E \u0432\u0440\u0430\u0436\u0435\u0441\u043A\u043E\u0433\u043E \u0431\u043E\u0442\u0430."
   delay: 2
+  duration: 5
 --- !u!1 &521918802
 GameObject:
   m_ObjectHideFlags: 0
@@ -3266,6 +3270,7 @@ MonoBehaviour:
     \u043A\u0430\u0436\u0434\u044B\u0435 n \u0441\u0435\u043A\u0443\u043D\u0434 \u043F\u043E\u0441\u043B\u0435
     \u0437\u0430\u043F\u0443\u0441\u043A\u0430 \u0430\u0440\u0435\u043D\u044B."
   delay: 2
+  duration: 5
 --- !u!1 &746482041
 GameObject:
   m_ObjectHideFlags: 0
@@ -4814,6 +4819,7 @@ MonoBehaviour:
     \u0440\u0430\u0432\u043D\u044B\u043C \u0437\u0430\u0434\u0430\u043D\u043D\u043E\u043C\u0443
     \u0437\u043D\u0430\u0447\u0430\u043D\u0438\u044E."
   delay: 2
+  duration: 5
 --- !u!225 &1319640500
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -4922,6 +4928,7 @@ MonoBehaviour:
     \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F \u0430\u0440\u0433\u0443\u043C\u0435\u043D\u0442\u0430:
     (-180; 180)."
   delay: 2
+  duration: 5
 --- !u!1 &1341671283
 GameObject:
   m_ObjectHideFlags: 0
@@ -4956,8 +4963,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0031051636, y: 0.000002861}
-  m_SizeDelta: {x: 137.85, y: 44.25}
+  m_AnchoredPosition: {x: 0.0004921, y: 0.000002861}
+  m_SizeDelta: {x: 109.12, y: 44.25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1341671285
 MonoBehaviour:
@@ -5159,6 +5166,7 @@ MonoBehaviour:
   text: "\u041F\u043E\u043F\u0430\u0434\u0430\u043D\u0438\u0435 \u0441\u043D\u0430\u0440\u044F\u0434\u0430
     \u0432 \u0441\u0432\u043E\u0435\u0433\u043E \u0431\u043E\u0442\u0430."
   delay: 2
+  duration: 5
 --- !u!1 &1364380822
 GameObject:
   m_ObjectHideFlags: 0
@@ -5461,7 +5469,7 @@ PrefabInstance:
     - target: {fileID: 1124215010251052870, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 0.000030517578
       objectReference: {fileID: 0}
     - target: {fileID: 2974397529553245353, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
@@ -6352,6 +6360,7 @@ MonoBehaviour:
     \u043A\u043E\u043B-\u0432\u043E \u0431\u043B\u043E\u043A\u043E\u0432. \u0420\u0430\u0437\u043C\u0435\u0440
     \u043A\u0430\u0440\u0442\u044B 700x400 \u0431\u043B\u043E\u043A\u043E\u0432."
   delay: 2
+  duration: 5
 --- !u!1 &1593741859
 GameObject:
   m_ObjectHideFlags: 0
@@ -6433,6 +6442,7 @@ MonoBehaviour:
     \u043F\u0440\u043E\u0442\u0438\u0432\u043D\u0438\u043A\u0430 \u043D\u0430 \u043C\u043E\u043C\u0435\u043D\u0442
     \u0432\u044B\u0437\u043E\u0432\u0430 \u043A\u043E\u043C\u0430\u043D\u0434\u044B."
   delay: 2
+  duration: 5
 --- !u!1 &1640013620
 GameObject:
   m_ObjectHideFlags: 0
@@ -6547,8 +6557,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0031051636, y: 0.000002861}
-  m_SizeDelta: {x: 137.85, y: 44.25}
+  m_AnchoredPosition: {x: 0.00045776, y: 0.000002861}
+  m_SizeDelta: {x: 109.12, y: 44.25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1704960837
 MonoBehaviour:
@@ -7391,7 +7401,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1260526709}
   m_Direction: 2
   m_Value: 0.99999976
-  m_Size: 0.31754377
+  m_Size: 0.3174553
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -7565,7 +7575,7 @@ PrefabInstance:
     - target: {fileID: 1124215010251052870, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -0.000030517578
       objectReference: {fileID: 0}
     - target: {fileID: 2974397529553245353, guid: 03d88889dbb70d94580aff98f16ec5dc,
         type: 3}
@@ -8310,6 +8320,7 @@ MonoBehaviour:
     \u0414\u043E\u043F\u0443\u0441\u0442\u0438\u043C\u044B\u0435 \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F
     \u0430\u0440\u0433\u0443\u043C\u0435\u043D\u0442\u0430: (-180; 180)."
   delay: 2
+  duration: 5
 --- !u!1 &2074785349
 GameObject:
   m_ObjectHideFlags: 0

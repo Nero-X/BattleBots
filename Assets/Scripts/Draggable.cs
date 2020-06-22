@@ -32,7 +32,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (eventData.hovered.Count == 0) eventData.hovered.Add(eventData.pointerEnter); // фикс пустого списка hovered
+        if (eventData.hovered.Count == 0 && eventData.pointerEnter != null) eventData.hovered.Add(eventData.pointerEnter); // фикс пустого списка hovered
         try
         {
             if (eventData.hovered.Exists(x => x.name.Contains("DZ") || x.name.Contains("Clone"))) // перетаскивать можно только на content или другую команду
